@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" type="text/css" href="css/header.css">
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+    <style>
+        .container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: calc(20px + 80px); /* Adjust the value accordingly */
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="file"],
+        .form-group textarea {
+            width: calc(40% - 100px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input[type="file"] {
+            width: calc(40% - 100px);
+            margin-top: 10px;
+        }
+        .image-preview img {
+            max-width: 50px;
+            max-height: 50px;
+            margin-top: 10px;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button-group button {
+            margin: 0 10px;
+        }
+        .text-danger {
+            color: red;
+        }
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+        @media (max-width: 480px) {
+            .company-name {
+                font-size: 1.2em;
+            }
+            .form-group input {
+                font-size: 1em;
+            }
+            th, td {
+                font-size: 0.8em;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+            <li><a href="/Promotion">Promotion</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us/Policy</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+<div class="container">
+    <form id="productForm" method="post" enctype="multipart/form-data" th:action="@{/create}" th:object="${product}"
+          onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+            <label class="col-form-label" for="upc">UPC Code:</label>
+            <input id="upc" class="form-control" type="text" th:field="${product.upc}"
+                   aria-label="Product UPC Code" onkeypress="detectBarcodeScan(event)">
+            <p th:if="${#fields.hasErrors('upc')}" class="text-danger" th:errors="${product.upc}"></p>
+        </div>
+
+        <div class="form-group">
+            <label class="col-form-label" for="item_Ref">Item Ref:</label>
+            <input id="item_Ref" class="form-control" type="text" th:field="${product.item_Ref}"
+                   aria-label="Product Item No" required>
+            <p th:if="${#fields.hasErrors('item_Ref')}" class="text-danger" th:errors="${product.item_Ref}"></p>
+        </div>
+
+        <div class="form-group">
+            <label class="col-form-label" for="description">Description:</label>
+            <input id="description" class="form-control" type="text" th:field="${product.description}"
+                   aria-label="Product Description" required>
+            <p th:if="${#fields.hasErrors('description')}" class="text-danger" th:errors="${product.description}"></p>
+        </div>
+
+        <div class="form-group">
+            <label class="col-form-label" for="category">Category:</label>
+            <input id="category" class="form-control" type="text" th:field="${product.category}"
+                   aria-label="Product Category" required>
+            <p th:if="${#fields.hasErrors('category')}" class="text-danger" th:errors="${product.category}"></p>
+        </div>
+
+        <div class="form-group">
+            <label class="col-form-label" for="subcategory">Subcategory:</label>
+            <input id="subcategory" class="form-control" type="text" th:field="${product.subcategory}"
+                   aria-label="Product Subcategory">
+            <p th:if="${#fields.hasErrors('subcategory')}" class="text-danger" th:errors="${product.subcategory}"></p>
+        </div>
+
+        <div class="form-group">
+            <label class="col-form-label" for="sellUnitPrice">Sell Unit Price:</label>
+            <input id="sellUnitPrice" class="form-control" type="number" th:field="${product.sell_Unit_Price}"
+                   aria-label="Sell Unit Price" step="0.01" required>
+            <p th:if="${#fields.hasErrors('sell_Unit_Price')}" class="text-danger"
+               th:errors="${product.sell_Unit_Price}"></p>
+        </div>
+      
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="isNew"
+                   th:checked="${product.isNew == 1}" name="isNew" value="1">
+            <label class="form-check-label" for="isNew">Mark as New</label>
+        </div>
+
+        <div class="image-preview">
+            <input type="file" class="form-control" name="imageFile" onchange="previewFile()">
+            <img src="" alt="Image Preview will appear here"/>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary" aria-label="Submit Product">Submit</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin'"
+                    aria-label="Cancel and Return to Admin">Cancel
+            </button>
+        </div>
+    </form>
+</div>
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400 ** Fax: 352-342-9022</p>
+
+</footer>
+
+<script>
+
+    function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+        const formData = new FormData(document.getElementById('productForm'));
+
+        fetch('/create', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(error => { throw new Error(error); });
+                }
+                return response.text(); // Read the server response
+            })
+            .then(data => {
+                alert(data); // Display success message
+                document.getElementById('productForm').reset(); // Reset the form
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert(error.message); // Display error message
+            });
+    }
+
+    function previewFile() {
+        const preview = document.querySelector('.image-preview img');
+        const file = document.querySelector('input[type=file]').files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            preview.src = reader.result;
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "";
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("upc").focus(); // Auto-focus on UPC input field
+    });
+
+    function detectBarcodeScan(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevent form submission
+            let upcValue = document.getElementById("upc").value.trim();
+
+            if (upcValue !== "") {
+                fetch(`/getProductByUPC?upc=${upcValue}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            document.getElementById("item_Ref").value = data.item_Ref;
+                            document.getElementById("description").value = data.description;
+                            document.getElementById("category").value = data.category;
+                            document.getElementById("subcategory").value = data.subcategory;
+                            document.getElementById("sellUnitPrice").value = data.sell_Unit_Price;
+                        } else {
+                            alert("No product found with this UPC.");
+                        }
+                    })
+                    .catch(error => console.error("Error fetching product:", error));
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

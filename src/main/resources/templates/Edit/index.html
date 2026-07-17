@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Edit Product</title>
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+    <style>
+        .container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: calc(20px + 80px);
+            overflow: hidden;
+        }
+
+        .form-group {
+            padding-bottom: 10px;
+        }
+
+        .form-group label {
+            width: 150px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="file"],
+        .form-group textarea,
+        .form-group select {
+            width: calc(100% - 150px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .image-preview {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            margin-left: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+
+        @media (max-width: 480px) {
+            .company-name {
+                font-size: 1.2em;
+            }
+
+            .form-group input {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us / Policy</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data" th:action="@{/edit/{id}(id=${product.id})}" th:object="${product}">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{image_Path}">
+
+        <div class="image-preview">
+            <input type="file" name="imageFile" id="imageFile" onchange="previewFile(this)">
+            <img th:if="${product.image_Path != null and not #strings.isEmpty(product.image_Path)}"
+                 th:src="@{${product.image_Path}}"
+                 alt="Product Image" class="image-preview-img">
+            <img th:unless="${product.image_Path != null and not #strings.isEmpty(product.image_Path)}"
+                 src="/public/images/noimage.png"
+                 alt="Default Image" class="image-preview-img">
+
+        </div>
+
+        <div class="form-group">
+            <label for="upc">UPC:</label>
+            <input class="form-control" th:field="*{upc}" id="upc">
+        </div>
+
+        <div class="form-group">
+            <label for="itemRef">Item Ref:</label>
+            <input class="form-control" th:field="*{item_Ref}" id="itemRef">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input class="form-control" th:field="*{description}" id="description">
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <input class="form-control" th:field="*{category}" id="category">
+        </div>
+
+        <div class="form-group">
+            <label for="subcategory">Subcategory:</label>
+            <input class="form-control" th:field="*{subcategory}" id="subcategory">
+        </div>
+
+        <div class="form-group">
+            <label for="sellUnitPrice">Sell Unit Price:</label>
+            <input class="form-control" th:field="*{sell_Unit_Price}" id="sellUnitPrice">
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Qty:</label>
+            <input class="form-control" th:field="*{quantity}" id="quantity">
+        </div>
+
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" th:field="*{isNew}" value="1" id="isNew">
+            <label class="form-check-label" for="isNew">Mark as New</label>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" onclick="location.href='/admin'" class="btn btn-secondary">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400 | Fax: 352-342-9022</p>
+</footer>
+
+<script>
+    window.onload = function() {
+        const preview = document.querySelector('.image-preview-img');
+        if (preview && preview.src.trim() !== '') {
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    };
+
+    function previewFile(input) {
+        const preview = document.querySelector('.image-preview-img');
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            preview.src = reader.result;
+            preview.style.display = 'block';
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "";
+            preview.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

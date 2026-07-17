@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Warehouse Orders</title>
+</head>
+<body>
+
+<h2>Orders</h2>
+
+<table border="1" width="100%">
+    <tr>
+        <th>Order #</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Employee</th>
+        <th>Action</th>
+    </tr>
+
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td th:text="${order.customerName}"></td>
+        <td th:text="${order.status}"></td>
+        <td th:text="${order.assignedEmployee} ?: '-'"></td>
+
+        <td>
+            <a th:href="@{/warehouse/order/{id}(id=${order.id})}">
+                Open
+            </a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Order Form</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+
+    <style>
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Button styling */
+        .download-btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect */
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
+
+             footer {
+        background-color: #000;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+    }
+
+    /* Footer for Mobile */
+    @media (max-width: 480px) {
+        footer {
+            position: relative; /* Change position for mobile */
+            padding: 15px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+    }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us/ Policy</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+
+<div class="container">
+    <h1>Download Order Forms</h1>
+    <a href="/Order_form.pdf" class="download-btn" download>Download Order Form</a><br>
+    <a href="/vape1.pdf" class="download-btn" download>Download Vape Order Form</a><br>
+
+</div>
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400  ** Fax: 352-342-9022</p>
+
+</footer>
+<script>
+
+    function toggleMenu() {
+        var menu = document.querySelector('nav ul');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
+</script>
+
+</body>
+</html>

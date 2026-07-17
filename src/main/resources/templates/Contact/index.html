@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing-Contact Us</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <style>
+
+        .formcontainer {
+            text-align: center;
+            border-top: 5px solid #ccc;
+            margin-bottom:0px
+        }
+
+
+        .contact-form-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 0px;
+            margin-bottom:0px
+        }
+
+        .registration-form {
+            width: 80%;
+            padding: 10px;
+            border-radius: 1px;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            min-width: 120px;
+            font-weight: bold;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .form-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            min-width: 120px;
+        }
+
+        .btn.btn-primary {
+            margin: 15px auto 0;
+            display: block;
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn.btn-primary:hover {
+            background-color: darkblue;
+        }
+
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 25px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+         @media (max-width: 480px) {
+        .company-name {
+            font-size: 1.2em;
+        }
+
+        .form-group input {
+            font-size: 1em;
+        }
+
+        th,
+        td {
+            font-size: 0.8em;
+        }
+
+        .modal-content {
+            padding: 15px;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us/ Policy</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="formcontainer">
+    <form class="contact-form" id="contactForm">
+        <h3>Contact Us</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="middleName">M Name:</label>
+                <input type="text" class="form-control" id="middleName" name="middleName">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address1">Address 1:</label>
+            <input type="text" class="form-control" id="address1" name="address1" required>
+        </div>
+        <div class="form-group">
+            <label for="address2">Address 2:</label>
+            <input type="text" class="form-control" id="address2" name="address2">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" class="form-control" id="state" name="state" required>
+            </div>
+            <div class="form-group">
+                <label for="zipcode">Zip Code:</label>
+                <input type="text" class="form-control" id="zipcode" name="zipcode" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="daytimePhone">Daytime Phone:</label>
+                <input type="tel" class="form-control" id="daytimePhone" name="daytimePhone" required>
+            </div>
+            <div class="form-group">
+                <label for="eveningPhone">Eve Phone:</label>
+                <input type="tel" class="form-control" id="eveningPhone" name="eveningPhone">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="comments">Comments:</label>
+            <textarea class="form-control" id="comments" name="comments"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400 ** Fax: 352-342-9022</p>
+
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('contactForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = {}; // Initialize an empty object to store form data
+
+        // Iterate over the form elements using for...in loop
+        for (var inputField in this.elements) {
+            if (this.elements.hasOwnProperty(inputField)) {
+                var element = this.elements[inputField];
+
+                // Check if the element is an input field or textarea
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    formData[element.name] = element.value; // Add field name and value to the formData object
+                }
+            }
+        }
+
+        console.log('Form Data:', formData); // Debugging line to see the form data
+
+        fetch('/submitContactForm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert('Form submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to submit the form.');
+        });
+    });
+});
+
+</script>
+</body>
+</html>

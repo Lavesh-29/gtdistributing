@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Promotion</title>
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: #111;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 60px;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .white-text {
+            font-size: 12px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* ===== MAIN PDF AREA ===== */
+        .container {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .pdf-wrapper {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            gap: 10px;
+            height: calc(100vh - 220px);
+        }
+
+        .pdf-container {
+            flex: 1;
+            background: #333;
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .pdf-wrapper {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .pdf-container {
+                height: 85vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div>
+            <div class="company-name">GT Distributing</div>
+            <div class="white-text">
+                385 SW 60th Ave<br>
+                Ocala, Florida 34474
+            </div>
+        </div>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us / Policy</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ===== PDF SECTION ===== -->
+<main class="container">
+    <div class="pdf-wrapper">
+
+        <!-- PDF PAGE 1 -->
+        <div class="pdf-container">
+            <iframe
+                    src="/public/images/GT_Promo_Flyer_Mar_2026.pdf#zoom=page-fit"
+                    title="Promotion Page 1">
+            </iframe>
+        </div>
+
+        <!-- PDF PAGE 2 -->
+<!--        <div class="pdf-container">-->
+<!--            <iframe-->
+<!--                    src="/public/images/GT_Promo_Flyer_Mar_2026.pdf#zoom=page-fit"-->
+<!--                    title="Promotion Page 2">-->
+<!--            </iframe>-->
+<!--        </div>-->
+
+    </div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>Content copyright 2021. GT DISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400 ** Fax: 352-342-9022</p>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const menu = document.querySelector('nav ul');
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+</script>
+
+</body>
+</html>

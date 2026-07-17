@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Detail</title>
+</head>
+<body>
+
+<h2>
+    Order #
+    <span th:text="${order.id}"></span>
+</h2>
+<p>
+    Customer:
+    <span th:text="${order.customerName}"></span>
+    (
+    <span th:text="${order.customerNo}"></span>
+
+    )
+</p>
+<p>
+    Assigned Employee:
+    <span th:text="${order.assignedEmployee} ?: 'Not assigned'"></span>
+</p>
+
+<p>
+    Status:
+    <span th:text="${order.status}"></span>
+</p>
+<form th:action="@{/warehouse/start/{id}(id=${order.id})}" method="post">
+    <button type="submit">Start Picking</button>
+
+    <a th:href="@{'/printOrderPdf/' + ${order.id}}" target="_blank">
+        Print PDF
+    </a>
+    <input type="hidden" name="orderId" th:value="${order.id}" />
+
+</form>
+<table border="1" width="100%">
+    <tr>
+        <th>Item</th>
+        <th>Description</th>
+        <th>Qty</th>
+    </tr>
+
+    <tr th:each="item : ${items}">
+        <td th:text="${item.itemRef}"></td>
+        <td th:text="${item.description}"></td>
+        <td th:text="${item.qty}"></td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Products</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+
+        body{
+            margin:0;
+            font-family:Arial, Helvetica, sans-serif;
+            background:#f4f4f4;
+        }
+
+        /* HEADER */
+
+        header{
+            background:#000;
+            color:white;
+            padding:10px 20px;
+        }
+
+        .logo{
+            display:flex;
+            align-items:center;
+        }
+
+        .logo img{
+            height:60px;
+            margin-right:15px;
+        }
+
+        .company-name{
+            font-size:22px;
+            font-weight:bold;
+        }
+
+        nav ul{
+            display:flex;
+            list-style:none;
+            padding:0;
+            margin-top:10px;
+        }
+
+        nav ul li{
+            margin-right:20px;
+        }
+
+        nav ul li a{
+            color:white;
+            text-decoration:none;
+        }
+
+        /* SEARCH */
+
+        .search-container{
+            background:white;
+            padding:15px;
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .search-container input{
+            padding:10px;
+            flex:1;
+        }
+
+        .search-container select{
+            padding:10px;
+        }
+
+        .search-container button{
+            padding:10px 15px;
+        }
+
+        /* PRODUCT GRID */
+
+        .product-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+            gap:20px;
+            padding:20px;
+        }
+
+        .product-card{
+            background:white;
+            border-radius:8px;
+            overflow:hidden;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            transition:0.3s;
+        }
+
+        .product-card:hover{
+            transform:translateY(-4px);
+        }
+
+        .product-image{
+            height:200px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#fafafa;
+        }
+
+        .product-image img{
+            max-height:180px;
+            max-width:90%;
+            cursor:pointer;
+        }
+
+        .product-info{
+            padding:15px;
+        }
+
+       .product-title{
+    font-size:14px;
+    height:40px;
+    overflow:hidden;
+    font-weight:bold;   /* ADD THIS */
+}
+        .item-ref{
+            font-size:12px;
+            color:#777;
+        }
+        /* MODAL */
+
+        .modal{
+            display:none;
+            position:fixed;
+            z-index:1000;
+            inset:0;
+
+            background:rgba(0,0,0,0.8);
+
+            justify-content:center;
+            align-items:center;
+        }
+
+        .modal-content{
+            position:relative;
+            background:white;
+            padding:10px;
+            border-radius:10px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .modal-content img{
+            max-width:60vw;
+            max-height:60vh;
+            object-fit:contain;
+            display:block;
+        }
+
+        .close{
+            position:absolute;
+            top:8px;
+            right:8px;
+
+            width:28px;
+            height:28px;
+
+            background:black;
+            color:white;
+
+            border-radius:50%;
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        /* FOOTER */
+
+        footer{
+            background:black;
+            color:white;
+            text-align:center;
+            padding:20px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <img src="/public/images/image.png">
+        <div>
+            <div class="company-name">GT Distributing</div>
+            <div>385 SW 60th Ave<br>Ocala FL 34474</div>
+        </div>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us / Policy</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+<!-- SEARCH -->
+
+<div class="search-container">
+
+    <input type="text" id="searchInput" placeholder="Search or scan barcode">
+
+    <select id="categoryDropdown" onchange="filterProducts()">
+        <option value="">All Categories</option>
+        <option th:each="category : ${categories}"
+                th:value="${category}"
+                th:text="${category}">
+        </option>
+    </select>
+
+    <label>
+        <input type="checkbox" id="newOnlyCheckbox" onchange="filterProducts()"> New Items
+    </label>
+
+</div>
+
+<!-- PRODUCT GRID -->
+
+<div class="product-grid" id="productGrid">
+
+    <div class="product-card"
+         th:each="product : ${products}"
+         th:if="${product.quantity >=1}"
+         th:data-category="${product.category}"
+         th:data-upc="${product.upc}"
+         th:data-item="${product.item_Ref}"
+         th:attr="data-isnew=${product.isNew}">
+
+        <div class="product-image">
+
+            <img th:if="${product.image_Path != null and !#strings.isEmpty(product.image_Path)}"
+                 th:src="@{${product.image_Path}}"
+                 onclick="showImage(this.src)">
+
+            <img th:unless="${product.image_Path != null and !#strings.isEmpty(product.image_Path)}"
+                 src="/public/images/noimage.png"
+                 onclick="showImage(this.src)">
+
+        </div>
+
+        <div class="product-info">
+
+            <div class="product-title"
+                 th:text="${product.description}">
+            </div>
+
+            <div class="item-ref">
+                Item: <span th:text="${product.item_Ref}"></span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="imageModal" class="modal" onclick="closeModal(event)">
+
+    <div class="modal-content" onclick="event.stopPropagation()">
+
+        <span class="close" onclick="closeModal(event)">&times;</span>
+
+        <img id="modalImage" src="">
+
+    </div>
+
+</div>
+<footer>
+
+    <p>© 2021 GTDISTRIBUTING.COM</p>
+    <p>Phone: 352-873-0400 | Fax: 352-342-9022</p>
+
+</footer>
+
+<script>
+
+    /* IMAGE MODAL */
+
+    function showImage(src){
+    document.getElementById("imageModal").style.display="flex"
+    document.getElementById("modalImage").src=src
+    }
+
+    function closeModal(e){
+    if(e.target.id==="imageModal" || e.target.classList.contains("close")){
+    document.getElementById("imageModal").style.display="none"
+    }
+    }
+
+    /* SEARCH */
+
+    // document.getElementById("searchInput").addEventListener("input",function(){
+    //
+    // const value=this.value.toUpperCase()
+    // const cards=document.querySelectorAll(".product-card")
+    //
+    // cards.forEach(card=>{
+    //
+    // const desc=card.querySelector(".product-title").textContent.toUpperCase()
+    // const upc=(card.dataset.upc||"").toUpperCase()
+    // const item=(card.dataset.item||"").toUpperCase()
+    //
+    // if(desc.includes(value)||upc.includes(value)||item.includes(value))
+    // card.style.display="block"
+    // else
+    // card.style.display="none"
+    //
+    // })
+    //
+    // })
+    document.getElementById("searchInput").addEventListener("input", function () {
+
+        const terms = this.value.toUpperCase().trim().split(/\s+/);
+        const cards = document.querySelectorAll(".product-card");
+
+        cards.forEach(card => {
+
+            const desc = card.querySelector(".product-title").textContent.toUpperCase();
+            const upc = (card.dataset.upc || "").toUpperCase();
+            const item = (card.dataset.item || "").toUpperCase();
+
+            const text = `${desc} ${upc} ${item}`;
+
+            const match = terms.every(term => text.includes(term));
+
+            card.style.display = match ? "block" : "none";
+        });
+
+    });
+
+    /* FILTER */
+
+    function filterProducts(){
+
+    const category=document.getElementById("categoryDropdown").value.toLowerCase()
+    const newOnly=document.getElementById("newOnlyCheckbox").checked
+
+    const cards=document.querySelectorAll(".product-card")
+
+    cards.forEach(card=>{
+
+    const cardCategory=(card.dataset.category||"").toLowerCase()
+    const isNew=card.dataset.isnew==="1"
+
+    let show=true
+
+    if(category && cardCategory!==category)
+    show=false
+
+    if(newOnly && !isNew)
+    show=false
+
+    card.style.display=show?"block":"none"
+
+    })
+
+    }
+
+</script>
+
+</body>
+</html>

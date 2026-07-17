@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management - GT Distributing</title>
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+    <style>
+        /* Copy the same styles from your product page */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header, footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/index">Home</a></li>
+            <li><a href="/Promotion">Promotion</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us/ Policy</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+<div class="container">
+    <div class="search-container">
+        <button onclick="redirectToCreateCustomer()">Add Customer</button>
+        <input type="text" id="searchInput" placeholder="Search by Name or Customer No..." onkeyup="searchTable()">
+    </div>
+    <table id="customerTable">
+        <thead>
+        <tr>
+            <th>Customer No</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Address 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>ZIP</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td th:text="${customer.custNo}"></td>
+            <td th:text="${customer.name}"></td>
+            <td th:text="${customer.address}"></td>
+            <td th:text="${customer.address2}"></td>
+            <td th:text="${customer.city}"></td>
+            <td th:text="${customer.state}"></td>
+            <td th:text="${customer.zip}"></td>
+            <td>
+                <button type="button" th:onclick="|window.location.href='/editcustomer/' + ${customer.custNo}|">Edit
+                </button>
+                <button type="button" th:onclick="|confirmDeleteCustomer(${customer.custNo})|">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <p>&copy; 2025 GT Distributing. All rights reserved.</p>
+</footer>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <p id="modalMessage">Are you sure you want to delete this customer? ID ${id}?</p>
+        <button id="confirmDeleteBtn">Delete</button>
+        <button onclick="closeDeleteModal()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function redirectToCreateCustomer() {
+         window.location.href = "/add-customer";
+     }
+
+     function searchTable() {
+         const searchInput = document.getElementById('searchInput').value.toLowerCase();
+         const table = document.getElementById('customerTable');
+         const rows = table.getElementsByTagName('tr');
+
+         for (let i = 1; i < rows.length; i++) {
+             const cells = rows[i].getElementsByTagName('td');
+             let match = false;
+
+             for (let j = 0; j < cells.length - 1; j++) {
+                 if (cells[j].innerText.toLowerCase().includes(searchInput)) {
+                     match = true;
+                     break;
+                 }
+             }
+
+             rows[i].style.display = match ? '' : 'none';
+         }
+     }
+function confirmDeleteCustomer(customerId) {
+    const modal = document.getElementById('deleteModal');
+    const confirmButton = document.getElementById('confirmDeleteBtn');
+    modalMessage.innerText = `Are you sure you want to delete this customer with ID ${customerId}?`;
+    modal.style.display = 'block';
+
+    confirmButton.onclick = function () {
+        // Send DELETE request to delete the customer
+        fetch(`/delete-customer/${customerId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // Refresh the customer-admin page to show updated data
+                window.location.href = "/customer-admin";  // Redirect to reload the updated page
+            } else {
+                console.error('Error deleting customer');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        // Close the modal after attempting delete
+        closeDeleteModal();
+    };
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+</script>
+</body>
+</html>

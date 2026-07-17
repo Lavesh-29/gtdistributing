@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Order Page</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-container,
+        .search-container,
+        .preview-order {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        table {
+            margin: 10px auto;
+            width: 80%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #000;
+        }
+
+        th {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+            color: white;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-container button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .quantity-container input {
+            width: 30px;
+            text-align: center;
+            margin: 0 10px;
+            color: blue;
+        }
+
+        .modal,
+        .modal-preview {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .preview-modal-content {
+            width: 90%;
+            max-width: 1000px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .button-container button {
+            width: 28%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button-container .cancel-button {
+            background-color: #dc3545;
+        }
+
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .cancel-button:hover {
+            background-color: #c82333;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: red;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            padding: 8px;
+            padding-right: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        #totalQtyContainer {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #searchInput {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #categoryDropdown {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 200px;
+            font-size: 16px;
+        }
+
+        #previewButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            border-color: #cccccc;
+        }
+
+        #previewButton:hover {
+            background-color: #0056b3;
+        }
+         #dealsButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+        }
+
+        #dealsButton:hover {
+            background-color: #0056b3;
+        }
+
+
+        .qty-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .qty-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .quantity-display {
+            color: blue;
+            margin: 0 5px;
+        }
+
+        .password-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .password-toggle i {
+            font-size: 18px;
+        }
+        .order-rule {
+  display: none;
+        }
+        /* Product image icon */
+        .product-icon {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background: white;
+        }
+        .image-modal {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .image-modal-content {
+            position: relative;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        .image-modal-content img {
+            display: block;
+            max-width: 60vw;
+            max-height: 60vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .image-modal .close {
+            position: absolute;  /* IMPORTANT */
+            top: 8px;
+            right: 8px;
+
+            width: 28px;
+            height: 28px;
+
+            background: black;
+            color: white;
+
+            border-radius: 50%;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            #searchInput,
+            #scannerInput,
+            #categoryDropdown,
+            #previewButton {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            #productTable {
+                font-size: 0.9em;
+            }
+
+            .quantity-container button,
+            .quantity-container input {
+                font-size: 0.8em;
+                padding: 5px;
+            }
+
+            .button-container button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<div id="customerModal" class="modal">
+    <div class="modal-content">
+        <form id="customerForm">
+            <div class="form-group">
+                <label for="emailId">Email Id:</label>
+                <input type="email" id="emailId" name="emailId" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required>
+                    <span class="password-toggle" id="passwordToggle">
+
+                       </span>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">Submit</button>
+                <button type="button" class="cancel-button" onclick="redirectToHome()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="main-content">
+
+    <header>
+        <div class="logo">
+            <img src="/public/images/image.png" alt="Logo">
+            <div class="text-container">
+                <div class="company-name">GT Distributing</div>
+                <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+            </div>
+        </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+        <nav>
+            <ul>
+                <li><a href="/index">Home</a></li>
+<!--                <li><a href="/Promotion">Promotion</a></li>-->
+                <li><a href="/products">Products</a></li>
+                <li><a href="/OrderForm">Order Form</a></li>
+                <li><a href="/order">Order</a></li>
+                <li><a href="/registration">Registration</a></li>
+                <li><a href="/return">About Us/ Policy</a></li>
+            </ul>
+        </nav>
+
+    </header>
+    <div class="action-bar" style="display: flex; align-items: center; gap: 10px; margin-top: 20px;">
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <input type="text"
+                   id="searchInput"
+                   onkeyup="if(event.key === 'Enter'){ handleScan(event); } else { debouncedSearch(); }"
+                   placeholder="Search or scan"
+                   style="flex: 1;">
+            <button id="cameraBtn"
+                    style="display:flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9; cursor:pointer; font-size:14px;">
+                <!-- Camera SVG Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20" height="20" viewBox="0 0 24 24"
+                     style="fill:#000;">
+                    <path d="M20 5h-3.17l-1.84-2H9.01L7.17 5H4c-1.1
+             0-2 .9-2 2v12c0 1.1.9 2
+             2 2h16c1.1 0 2-.9
+             2-2V7c0-1.1-.9-2-2-2zm-8
+             14c-2.76 0-5-2.24-5-5s2.24-5
+             5-5 5 2.24 5 5-2.24 5-5
+             5z"/>
+                </svg>
+                <span>Scan</span>
+            </button>
+
+        </div>
+
+        <select id="categoryDropdown" onchange="filterByCategory()" style="flex: 1;">
+            <option value="">Select Category</option>
+            <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+        </select>
+        <button id="previewButton" onclick="handlePreviewClick()" style="flex: none;">Preview Order</button>
+        <label style="margin-left: 20px;">
+            <input type="checkbox" id="newOnlyCheckbox" onchange="filterByCategory()"> New Items Only
+        </label>
+<!--        <button id="dealsButton" onclick="openDeals()" style="flex: none;">Deals</button>-->
+    </div>
+    <table id="productTable">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Item Ref No</th>
+            <th>Description</th>
+            <th>QTY</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="product : ${products}"
+            th:data-upc="${product.upc}"
+            th:data-sell-unit-price="${product.sell_Unit_Price}"
+            th:data-category="${product.category}"
+            th:data-isnew="${product.isNew}"
+            th:data-quantity="${product.quantity}"
+            th:data-qty-limit="${product.qty_limit}">
+
+            <td>
+                <img th:if="${product.image_Path != null and not #strings.isEmpty(product.image_Path)}"
+                     th:src="@{${product.image_Path}}"
+                     class="product-icon"
+                     onclick="showImageModal(this.src)">
+
+                <img th:unless="${product.image_Path != null and not #strings.isEmpty(product.image_Path)}"
+                     src="/public/images/noimage.png"
+                     alt="Default Image"
+                     class="product-icon"
+                     onclick="showImageModal(this.src)">
+            </td>
+
+            <td th:text="${product.item_Ref}"></td>
+            <td th:text="${product.description}"></td>
+
+            <td>
+                <div class="quantity-container">
+                    <button type="button" onclick="changeQuantity(this, -1)">-</button>
+                    <input class="quantity-input" value="0" oninput="handleManualQuantityChange(this)">
+                    <button type="button" onclick="changeQuantity(this, 1)">+</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<div id="imageModal" class="image-modal">
+    <div class="image-modal-content">
+        <span class="close" onclick="closeImageModal()">&times;</span>
+        <img id="modalImage" src="">
+    </div>
+</div>
+<!-- Camera Scanner Modal -->
+<div id="scannerModal" class="modal"
+     style="display:none; width:100%; max-width:600px; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:9999;">
+
+    <div class="modal-content"
+         style="width:100%; height:150px; padding:0; margin:0; border:0.5px solid #ccc; border-radius:6px; overflow:hidden; position:relative; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+
+        <!-- Video absolutely positioned to cover -->
+        <video id="scannerVideo" autoplay playsinline muted
+               style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>
+
+        <!-- Close button -->
+        <button id="closeScanner"
+                style="position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:3px; padding:4px 8px; font-size:14px; cursor:pointer; z-index:2;">
+            ✕
+        </button>
+    </div>
+</div>
+<div class="order-rule"
+     data-min="20"
+     data-max="29"
+     data-range-start="5011"
+     data-range-end="5021">
+    Special Offer: If you buy Total 30 cartoon of native you will get 0.50 off each cartoon  (5011–5021).
+</div>
+<div class="order-rule"
+     data-min="7"
+     data-max="14"
+     data-range-start="1551"
+     data-range-end="1558">
+    Special Offer: If you buy Total 15 cartoon of Clipper you will get 0.50 off each cartoon  (1551-1558).
+</div>
+<div class="order-rule"
+     data-min="20"
+     data-max="29"
+     data-range-start="5581"
+     data-range-end="5591">
+    Special Offer: If you buy Total 30 cartoon of Edgefield you will get 0.50 off each cartoon  (5581-5591).
+</div>
+
+<div class="order-rule"
+     data-min="13"
+     data-max="19"
+     data-range-start="4451"
+     data-range-end="4457">
+    Special Offer: Buy  16oz Jazz Detox 20 Get 4 Free  .(4451-4457)
+</div>
+<div class="order-rule"
+     data-min="13"
+     data-max="19"
+     data-range-start="4471"
+     data-range-end="4481">
+    Special Offer: Buy  10oz Jazz Detox 20 Get 4 Free  .(4471-4481)
+</div>
+<!--<div class="order-rule"-->
+<!--     data-min="3"-->
+<!--     data-max="4"-->
+<!--     data-range-start="12901"-->
+<!--     data-range-end="13029">-->
+<!--    Special Offer: Buy  Fume Extra & Ultra 5+ Get $3 Off( Mix & Match)-->
+<!--</div>-->
+<!--<div class="order-rule"-->
+<!--     data-min="3"-->
+<!--     data-max="4"-->
+<!--     data-range-start="13053"-->
+<!--     data-range-end="13079">-->
+<!--    Special Offer: Buy  Fume INFINITY 5+ Get $3 Off( Mix & Match)-->
+<!--</div>-->
+<!--<div class="order-rule"-->
+<!--     data-min="3"-->
+<!--     data-max="4"-->
+<!--     data-range-start="12574"-->
+<!--     data-range-end="12594">-->
+<!--    Special Offer: Buy  HQD Cuvie Everest 5+ Get $5 Off-->
+<!--</div>-->
+<!-- Deals Popup Modal -->
+<div id="dealsModal" class="modal">
+    <div class="modal-content">
+
+        <h2 style="text-align:center;">Special Offers</h2>
+
+        <ul style="margin-top:10px; line-height:1.6;">
+            <li>If you buy total 30 cartons of Native you will get $0.50 off each carton</li>
+            <li>If you buy total 30 cartons of Edgefield you will get $0.50 off each carton</li>
+            <li>If you buy total 15 cartons of Clipper you will get $0.50 off each carton</li>
+            <li>If you buy (Any Qty)Classic Cigarettes you will get 2.00 off each carton</li>
+            <li>If you buy (Any Qty)Southern Harvest Cigarettes you will get 3.00 off each carton</li>
+<!--            <li>Good Stuff Tobacco 6oz — buy 6+ and get $0.50 off each bag</li>-->
+            <li>Buy 16oz Jazz Detox — buy 20 get 4 free</li>
+            <li>Buy 10oz Jazz Detox — buy 20 get 4 free</li>
+            <li>Buy Raz 5+ Get $3 Off( Mix & Match) </li>
+         </ul>
+
+        <!-- Close Button -->
+        <div style="text-align:center; margin-top:20px;">
+            <button onclick="closeDeals()"
+                    style="padding:10px 20px; background:#dc3545; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+                Close
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal hidden">
+    <div class="modal-content preview-modal-content">
+        <h2>Order Preview</h2>
+        <table id="previewTable">
+            <thead>
+            <tr>
+                <th>Item Ref No</th>
+                <th>Description</th>
+                <th>QTY</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="totalQtyContainer">
+            <strong>Total Quantity: </strong><span id="totalQty">0</span>
+        </div>
+        <div id="totalContainer">
+            <strong>Approx Order Total: </strong><span id="totalPrice">$0.00</span>
+        </div>
+
+        <div class="button-container">
+            <button onclick="editOrder()">Edit Order</button>
+            <button id="submitButton" onclick="submitOrder()">Submit Order</button>
+        </div>
+
+    </div>
+</div>
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400 ** Fax: 352-342-9022</p>
+
+</footer>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const cameraBtn = document.getElementById("cameraBtn");
+    cameraBtn.addEventListener("click", toggleScanner);
+});
+
+    let currentCustomerName = '';
+    let currentCustNo = '';
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+        const customerModal = document.getElementById("customerModal");
+
+        if (!isAuthenticated) {
+            localStorage.removeItem("customerName");
+            localStorage.removeItem("accountNo");
+            localStorage.removeItem("emailId");
+
+            if (customerModal) {
+                customerModal.style.display = "flex";
+                const firstInput = customerModal.querySelector("input[type='email']");
+                if (firstInput) firstInput.focus();
+            }
+        } else {
+            if (customerModal) customerModal.style.display = "none";
+            document.querySelector(".main-content").style.display = "block";
+            document.getElementById("searchInput")?.focus();
+
+            // Restore runtime variables
+            const storedName = localStorage.getItem('customerName');
+            const storedEmail = localStorage.getItem('emailId');
+            const storedAccountNo = localStorage.getItem('accountNo');
+            if (storedName) currentCustomerName = storedName;
+            if (storedAccountNo) currentCustNo = storedAccountNo;
+        }
+
+        loadOrderFromLocalStorage();
+    });
+
+
+    document.getElementById("customerForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const emailId = document.getElementById("emailId").value.trim();
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch('/api/customers/validateCustomer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emailId, password }),
+            });
+
+            const data = await response.json();
+
+            if (data && data.customerName && data.accountNo) {
+                // Save auth info
+                sessionStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('customerName', data.customerName);
+                localStorage.setItem('accountNo', data.accountNo);
+                localStorage.setItem('emailId', emailId); // ✅ Save email
+
+                // Save to runtime variables
+                currentCustomerName = data.customerName;
+                currentCustNo = data.accountNo;
+
+                document.getElementById("customerModal").style.display = "none";
+                document.querySelector(".main-content").style.display = "block";
+                document.getElementById("searchInput")?.focus();
+            } else if (data && data.error) {
+                alert(data.error);
+                document.getElementById("customerForm").reset();
+                document.getElementById("emailId").focus();
+            } else {
+                alert("Invalid response from the server.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        }
+    });
+
+    function redirectToHome() {
+        window.location.href = "/index";
+    }
+   function openDeals() {
+    document.getElementById("dealsModal").style.display = "flex";
+}
+
+function closeDeals() {
+    document.getElementById("dealsModal").style.display = "none";
+}
+
+// close when clicking outside modal
+window.onclick = function(event) {
+    let modal = document.getElementById("dealsModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+    async function submitOrder() {
+        const submitButton = document.getElementById('submitButton');
+        if (!submitButton) return console.error("Submit button not found!");
+
+        submitButton.disabled = true;
+
+        try {
+            const storedEmailId = localStorage.getItem('emailId');
+            const customerName = localStorage.getItem('customerName');
+            const cust_no = localStorage.getItem('accountNo');
+
+            if (!customerName || !cust_no || !storedEmailId) {
+                alert("Missing customer info. Please log in again.");
+                window.location.href = "/index";
+                return;
+            }
+
+            const table = document.getElementById('previewTable');
+            const rows = table.querySelector('tbody').querySelectorAll('tr');
+
+            const orderItems = Array.from(rows).map(row => {
+                const item_Ref = row.querySelector('td:nth-child(1)').innerText;
+                const description = row.querySelector('td:nth-child(2)').innerText;
+                const qty = row.querySelector('td:nth-child(3) span').innerText;
+                return { item_Ref, description, qty };
+            });
+
+            const totalPriceString = document.getElementById('totalPrice').innerText.replace('$', '').replace(',', '');
+            const totalPriceValue = parseFloat(totalPriceString);
+
+            const orderData = {
+                customerName,
+                accountNo: cust_no,
+                emailId: storedEmailId,
+                items: orderItems,
+                totalQuantity: document.getElementById('totalQty').innerText,
+                totalPrice: totalPriceValue
+            };
+
+            const response = await fetch('/sendOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+
+            if (response.ok) {
+                alert('Order submitted successfully!');
+                document.querySelector("#previewTable tbody").innerHTML = "";
+                document.getElementById("totalQty").textContent = "0";
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/index';
+            } else {
+                const errorData = await response.json();
+                alert('Failed to submit order: ' + (errorData.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error submitting order:', error);
+            alert('An error occurred while submitting the order.');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+     function toggleMenu() {
+        var menu = document.querySelector('nav ul');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+     }
+
+  async function handleScan(inputOrEvent) {
+    let input = "";
+
+    // Check if called with event (keyboard input)
+    if (typeof inputOrEvent === "object" && inputOrEvent.target) {
+        input = inputOrEvent.target.value.trim();
+    }
+    // Called with raw string (camera scan)
+    else if (typeof inputOrEvent === "string") {
+        input = inputOrEvent.trim();
+    }
+
+    input = input.replace(/\D/g, ''); // digits only
+
+    if (input.length === 12 || input.length === 13) {
+        try {
+            const response = await fetch(`/api/validateItem/${input}`);
+            if (!response.ok) throw new Error("Product not found");
+
+            const product = await response.json();
+            addItemToOrder(product);
+
+            // Clear the input if from text box
+            if (typeof inputOrEvent === "object" && inputOrEvent.target) {
+                inputOrEvent.target.value = "";
+            }
+
+            return true; // ✅ item found
+        } catch (err) {
+            alert(err.message);
+
+            if (typeof inputOrEvent === "object" && inputOrEvent.target) {
+                inputOrEvent.target.value = "";
+            }
+
+            return false; // ❌ item not found
+        }
+    } else {
+        if (typeof inputOrEvent === "object" && inputOrEvent.target) {
+            inputOrEvent.target.value = "";
+        }
+        return false;
+    }
+}
+
+    function addItemToOrder(product) {
+    const tableBody = document.querySelector('#productTable tbody');
+    if (!tableBody) return;
+
+    // Check if item already exists in table
+    const existingRow = tableBody.querySelector(`tr[data-upc="${product.upc}"]`);
+    if (existingRow) {
+        // Increment quantity
+        const qtyInput = existingRow.querySelector('.quantity-input');
+        qtyInput.value = parseInt(qtyInput.value) + 1;
+        updateLocalStorage(product.item_Ref, parseInt(qtyInput.value));
+        return;
+    }
+
+    // Create new row
+    const newRow = document.createElement('tr');
+    newRow.setAttribute('data-upc', product.upc);
+
+    newRow.innerHTML = `
+        <td><img src="${product.image_Path || '/public/images/noimage.png'}" alt="Image" width="auto" height="25" onclick="showImageModal(this.src)"></td>
+        <td>${product.item_Ref}</td>
+        <td>${product.description}</td>
+        <td>
+            <div class="quantity-container">
+                <button type="button" onclick="changeQuantity(this, -1)">-</button>
+                <input type="text" class="quantity-input" value="1">
+                <button type="button" onclick="changeQuantity(this, 1)">+</button>
+            </div>
+        </td>
+    `;
+
+    tableBody.appendChild(newRow);
+    updateLocalStorage(product.item_Ref, 1);
+}
+
+     function decrementQuantity(button) {
+                                        const input = button.nextElementSibling;
+                                        if (parseInt(input.value) > 0) {
+                                            input.value = parseInt(input.value) - 1;
+                                        }
+                                    }
+     function incrementQuantity(button) {
+                                        const input = button.previousElementSibling;
+                                        input.value = parseInt(input.value) + 1;
+                                    }
+     function loadOrderFromLocalStorage() {
+                             let savedOrderItems = localStorage.getItem('orderItems');
+                             if (savedOrderItems) {
+                                 try {
+                                     let orderItems = JSON.parse(savedOrderItems);
+                                     let rows = document.querySelectorAll("#productTable tbody tr");
+
+                                     rows.forEach(function (row) {
+                                         let itemRef = row.cells[1].textContent;
+                                         let qtyInput = row.querySelector(".quantity-input");
+
+                                         if (orderItems.hasOwnProperty(itemRef)) {
+                                             qtyInput.value = orderItems[itemRef];
+                                         }
+                                     });
+                                 } catch (error) {
+                                     console.error("Error parsing orderItems from localStorage:", error);
+                                     localStorage.removeItem('orderItems');
+                                 }
+                             }
+                         }
+function getQuantityLimitData(inputElement) {
+            const row = inputElement.closest("tr");
+            const currentQty = parseInt(inputElement.value) || 0;
+            const quantity = parseInt(row.dataset.quantity) || 0;
+            const qtyLimit = parseInt(row.dataset.qtyLimit) || 0;
+             return { row, inputElement, currentQty, quantity, qtyLimit };
+        }
+
+function changeQuantity(button, delta) {
+    const input = button.parentElement.querySelector(".quantity-input");
+    const { currentQty, quantity, qtyLimit } = getQuantityLimitData(input);
+
+    if (quantity <= 0) {
+        alert("This item is out of stock.");
+        return;
+    }
+
+    let newQty = currentQty + delta;
+    if (newQty < 0) newQty = 0;
+
+    if (newQty > qtyLimit) {
+        alert(`You cannot order more than ${qtyLimit} for this item.`);
+        newQty = qtyLimit;
+    }
+
+    input.value = newQty;
+
+    // Save to localStorage here:
+    updateLocalStorage(input.closest('tr').cells[1].textContent, newQty);
+
+}
+function updateLocalStorage(itemRef, quantity) {
+                             let orderItems = JSON.parse(localStorage.getItem('orderItems')) || {};
+                             orderItems[itemRef] = quantity;
+                             localStorage.setItem('orderItems', JSON.stringify(orderItems));
+                         }
+                                    function handleManualQuantityChange(input) {
+                         let newQuantity = parseInt(input.value);
+
+                         if (isNaN(newQuantity) || newQuantity < 0) {
+                             input.value = 0;
+                         } else {
+                             input.value = newQuantity;
+                         }
+                         }
+// Builds the preview modal (table + totals)
+function previewOrder() {
+    let totalQuantity = 0;
+    let totalPrice = 0;
+
+    // Track quantities by itemRef
+    let itemQuantities = {};
+
+    const previewTableBody = document.querySelector('#previewTable tbody');
+    previewTableBody.innerHTML = '';
+
+    const productRows = document.querySelectorAll('#productTable tbody tr');
+    productRows.forEach((row) => {
+        const quantityInput = row.querySelector('.quantity-input');
+        let quantity = parseInt(quantityInput.value) || 0;
+
+        if (quantity > 0) {
+            const itemRef = row.querySelector('td:nth-child(2)').innerText.trim();
+            const description = row.querySelector('td:nth-child(3)').innerText;
+            const sellUnitPrice = parseFloat(row.getAttribute('data-sell-unit-price'));
+            let itemTotalPrice = sellUnitPrice * quantity;
+
+            totalQuantity += quantity;
+            totalPrice += itemTotalPrice;
+
+            // ✅ Store quantities by itemRef number
+            const itemRefNum = parseInt(itemRef);
+            if (!isNaN(itemRefNum)) {
+                itemQuantities[itemRefNum] = (itemQuantities[itemRefNum] || 0) + quantity;
+            }
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${itemRef}</td>
+                <td>${description}</td>
+                <td>
+                    <button class="qty-btn" onclick="updateQuantity('${itemRef}', -1)">-</button>
+                    <span id="qty-${itemRef}">${quantity}</span>
+                    <button class="qty-btn" onclick="updateQuantity('${itemRef}', 1)">+</button>
+                </td>
+                <td><button class="delete-btn" onclick="removeItem('${itemRef}')">🗑</button></td>
+            `;
+            previewTableBody.appendChild(newRow);
+        }
+    });
+
+    // ✅ Always show preview modal
+    document.getElementById('totalQty').innerText = totalQuantity;
+    document.getElementById('totalPrice').innerText = `$${totalPrice.toFixed(2)}`;
+    localStorage.setItem('totalPrice', totalPrice);
+    document.getElementById('previewModal').style.display = 'flex';
+}
+
+function handlePreviewClick() {
+
+    previewOrder();
+
+    // Now run rule checks for alerts
+    document.querySelectorAll(".order-rule").forEach(rule => {
+        const rangeStart = parseInt(rule.dataset.rangeStart);
+        const rangeEnd = parseInt(rule.dataset.rangeEnd);
+        const min = parseInt(rule.dataset.min);
+        const max = parseInt(rule.dataset.max);
+        const message = rule.innerText;
+
+        // Calculate range qty from preview table
+        let rangeQty = 0;
+        document.querySelectorAll("#previewTable tbody tr").forEach(row => {
+            const itemRef = parseInt(row.querySelector("td:first-child").innerText.trim());
+            const qty = parseInt(row.querySelector("span[id^='qty-']").innerText);
+            if (itemRef >= rangeStart && itemRef <= rangeEnd) {
+                rangeQty += qty;
+            }
+        });
+
+        if (rangeQty >= min && rangeQty <= max) {
+            alert(message);
+        }
+    });
+}
+
+function updateQuantity(itemRef, change) {
+    const qtyElement = document.getElementById(`qty-${itemRef}`);
+    let newQty = parseInt(qtyElement.innerText) + change;
+
+    let matchedRow = null;
+    document.querySelectorAll("#productTable tbody tr").forEach((row) => {
+        if (row.cells[1].innerText.trim() === itemRef.trim()) {
+            matchedRow = row;
+        }
+    });
+
+    if (!matchedRow) return;
+
+    const description = matchedRow.querySelector('td:nth-child(3)').innerText;
+    const stock = parseInt(matchedRow.getAttribute('data-quantity')) || 0;
+    const qtyLimit = parseInt(matchedRow.getAttribute('data-qty_limit')) || Infinity;
+
+    // ❌ Out of stock: disallow anything
+    if (stock <= 0) {
+        alert(`❌ ${description} is out of stock.`);
+        return;
+    }
+
+    // 🚫 Enforce qty limit and show alert
+    if (newQty > qtyLimit) {
+        alert(`⚠️ You cannot order more than ${qtyLimit} for ${description}.`);
+        newQty = qtyLimit;
+    }
+
+    // 🗑 If quantity goes below 1, remove the item
+    if (newQty < 1) {
+        removeItem(itemRef);
+        return;
+    }
+
+    // ✅ Sync with main table and update preview
+    qtyElement.innerText = newQty;
+    matchedRow.querySelector(".quantity-input").value = newQty;
+    updateLocalStorage(itemRef, newQty);
+    previewOrder();
+}
+
+
+           function removeItem(itemRef) {
+                             document.querySelector(`#qty-${itemRef}`).closest("tr").remove();
+                             document.querySelectorAll("#productTable tbody tr").forEach((row) => {
+                                 if (row.cells[1].innerText === itemRef) {
+                                     row.querySelector(".quantity-input").value = 0;
+                                 }
+                             });
+                             updateLocalStorage(itemRef, 0);
+                             previewOrder();
+                         }
+                         function editOrder() {
+    const modal = document.getElementById("previewModal");
+    if (modal) {
+        modal.style.display = "none";
+    } else {
+        console.warn("previewModal not found");
+    }
+
+                         }
+function handleManualQuantityChange(input) {
+    const { currentQty, quantity, qtyLimit } = getQuantityLimitData(input);
+
+    if (quantity <= 0) {
+        alert("This item is out of stock.");
+        input.value = 0;
+        return;
+    }
+
+    if (currentQty > qtyLimit) {
+        alert(`You cannot order more than ${qtyLimit} for this item.`);
+        input.value = qtyLimit;
+    } else if (currentQty < 0 || isNaN(currentQty)) {
+        input.value = 0;
+    }
+    }
+
+           function closeImageModal() {
+                 document.getElementById("imageModal").style.display = "none";
+                   }
+           function showImageModal(imageSrc) {
+               var modal = document.getElementById("imageModal");
+               var modalImg = document.getElementById("modalImage");
+
+               modal.style.display = "flex";
+               modalImg.src = imageSrc;
+               modalImg.style.width = "400px";
+               modalImg.style.height = "400px";
+               modalImg.style.objectFit = "contain";
+           }
+ function filterByCategory() {
+  const selectedCategory = document.getElementById("categoryDropdown").value.toLowerCase();
+  const newOnly = document.getElementById("newOnlyCheckbox").checked;
+  const rows = document.querySelectorAll("#productTable tbody tr");
+
+  rows.forEach(row => {
+    const category = row.dataset.category?.toLowerCase() || '';
+    const isNew = row.dataset.isnew === "1";
+
+    const categoryMatch = selectedCategory === "" || category === selectedCategory;
+    const newItemMatch = !newOnly || isNew;
+
+    row.style.display = (categoryMatch && newItemMatch) ? "" : "none";
+  });
+}
+                         var searchTimeout;
+
+           function debouncedSearch() {
+                             clearTimeout(searchTimeout);
+                             searchTimeout = setTimeout(searchProducts, 300);
+                         }
+
+function searchProducts() {
+    const input = document.getElementById("searchInput");
+    const filter = input.value.trim().toUpperCase();
+    const table = document.getElementById("productTable");
+    const rows = table.getElementsByTagName("tr");
+    let itemFound = false;
+    const isScan = filter.length >= 10 && !filter.includes(' ');
+
+    // Get all promotion elements by their class name
+    const promoElements = document.querySelectorAll(".order-rule");
+
+    // Loop through the list of promotion elements and hide/show them
+    promoElements.forEach(promo => {
+        promo.style.display = (filter === "") ? "" : "none";
+    });
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const tdItemRef = row.getElementsByTagName("td")[1];
+        const tdDescription = row.getElementsByTagName("td")[2];
+        const upc = row.getAttribute("data-upc");
+        const qtyInput = row.querySelector("td input");
+
+        if (filter === "") {
+            row.style.display = ""; // Show all rows when filter is empty
+            continue;
+        }
+
+        if (tdItemRef && tdDescription) {
+            const txtItemRef = tdItemRef.textContent.trim().toUpperCase();
+            const txtDescription = tdDescription.textContent.trim().toUpperCase();
+            const upcValue = upc ? upc.trim().toUpperCase() : "";
+
+            const searchTerms = filter.split(/\s+/);
+            const matchesSearch = searchTerms.every(term =>
+                txtItemRef.includes(term) ||
+                txtDescription.includes(term) ||
+                upcValue.includes(term)
+            );
+
+            if (matchesSearch) {
+                itemFound = true;
+                row.style.display = "";
+
+                if (isScan) {
+                    const quantity = parseInt(row.dataset.quantity) || 0;
+                    const qtyLimit = parseInt(row.dataset.qtyLimit) || 0;
+
+                    if (quantity === 0) {
+                        alert(`Sorry, ${txtDescription} is temporarily out of stock.`);
+                        return;
+                    }
+
+                    if (qtyInput) {
+                        let currentQty = parseInt(qtyInput.value) || 0;
+                        let newQty = currentQty + 1;
+
+                        if (newQty > qtyLimit) {
+                            alert(`Only ${qtyLimit} allowed per order for ${txtDescription}.`);
+                            return;
+                        }
+
+                        qtyInput.value = newQty;
+                        updateLocalStorage(txtItemRef, newQty);
+                    }
+
+                    input.value = "";
+                    break; // Exit loop after processing scanned item
+                }
+            } else {
+                row.style.display = "none";
+            }
+        }
+    }
+
+    if (!itemFound && isScan) {
+        console.log("Scanned item not found.");
+    }
+
+    if (!isScan) {
+        console.log("Manual search performed. No item added.");
+    }
+
+    input.focus();
+    console.log(isScan ? "Scanned item processed." : "Manual search performed.");
+}
+let codeReader;
+let scannerOpen = false;
+
+const scannerModal = document.getElementById("scannerModal");
+const scannerVideo = document.getElementById("scannerVideo");
+const searchInput = document.getElementById("searchInput");
+const closeBtn = document.getElementById("closeScanner");
+const cameraBtn = document.getElementById("cameraBtn");
+const beep = new Audio("beep.wav");
+
+// Detect mobile
+function isMobileDevice() {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+// Toggle scanner
+function toggleScanner() {
+    if (scannerOpen) stopScanner();
+    else openScanner();
+}
+let scanLocked = false; // Prevent double-scan
+const scanDelay = 2000; // 2 seconds delay before next scan
+
+// Open scanner
+async function openScanner() {
+    if (scannerOpen) return;
+    scannerModal.style.display = "flex";
+    scannerOpen = true;
+
+    try {
+        // Reset previous scanner
+        if (codeReader) codeReader.reset();
+        codeReader = new ZXing.BrowserMultiFormatReader();
+
+        // Stop any existing stream
+        if (scannerVideo.srcObject) {
+            scannerVideo.srcObject.getTracks().forEach(track => track.stop());
+            scannerVideo.srcObject = null;
+        }
+
+        // Get video devices
+        const videoInputDevices = await codeReader.listVideoInputDevices();
+        if (videoInputDevices.length === 0) {
+            alert("No camera found.");
+            stopScanner();
+            return;
+        }
+
+        // Prefer back camera on mobile
+        let selectedDeviceId = videoInputDevices[0].deviceId;
+        for (const device of videoInputDevices) {
+            const label = (device.label || "").toLowerCase();
+            if (isMobileDevice() && (label.includes("back") || label.includes("environment"))) {
+                selectedDeviceId = device.deviceId;
+                break;
+            }
+        }
+
+        codeReader.decodeFromVideoDevice(selectedDeviceId, scannerVideo, async (result, err) => {
+            if (err && !(err instanceof ZXing.NotFoundException)) {
+                console.error("Scanner error:", err);
+            }
+
+            if (result && !scanLocked) {
+                scanLocked = true; // Lock scanner
+                let code = result.getText().trim().replace(/\D/g, '');
+                console.log("Scan result:", code);
+
+                // Convert EAN-13 starting with 0 to UPC-12
+                if (code.length === 13 && code.startsWith("0")) {
+                    code = code.substring(1);
+                }
+
+                if (code.length === 12 || code.length === 13) {
+                    searchInput.value = code;
+
+                    try {
+                        const found = await handleScan({ target: searchInput });
+                        if (found) {
+                            beep.play().catch(() => {});
+                        } else {
+                            alert("Item not found");
+                        }
+                    } catch (e) {
+                        console.error("Scan handling error:", e);
+                        alert("Error processing scanned item.");
+                    } finally {
+                        searchInput.value = "";
+                    }
+                } else {
+                    console.warn("Invalid scan (not UPC-12 or EAN-13):", code);
+                }
+
+                // Unlock scanner after delay
+                setTimeout(() => {
+                    scanLocked = false;
+                }, scanDelay);
+            }
+        });
+
+    } catch (error) {
+        console.error("Camera init failed:", error);
+        alert("Cannot access camera. Please check permissions.");
+        stopScanner();
+    }
+}
+
+// Stop scanner
+function stopScanner() {
+    if (codeReader) {
+        codeReader.reset();
+        codeReader = null;
+    }
+    if (scannerVideo.srcObject) {
+        scannerVideo.srcObject.getTracks().forEach(track => track.stop());
+        scannerVideo.srcObject = null;
+    }
+    scannerModal.style.display = "none";
+    scannerOpen = false;
+}
+
+// Event listeners
+if (closeBtn) closeBtn.addEventListener("click", stopScanner);
+if (cameraBtn) cameraBtn.addEventListener("click", toggleScanner);
+
+// Hide camera button on desktop
+document.addEventListener("DOMContentLoaded", () => {
+    if (cameraBtn && !isMobileDevice()) cameraBtn.style.display = "none";
+});
+
+window.addEventListener('beforeunload', () => {
+    sessionStorage.removeItem('isAuthenticated');
+});
+
+</script>
+</body>
+</html>

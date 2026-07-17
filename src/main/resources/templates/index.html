@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GT Distributing - Home</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+<!-- Age Verification Popup -->
+<div id="ageVerificationPopup">
+    <div class="popup-content">
+        <h2>Welcome! </h2>
+        <h2> Please verify your age to enter</h2>
+        <button id="under21Btn">Under 21</button>
+        <button id="over21Btn">21 & Over</button>
+    </div>
+</div>
+
+<!-- Message for underage visitors -->
+<div id="underageMessage">
+    <p>Apologies, the website you were attempting to view contains age-restricted content.</p>
+</div>
+
+<header>
+    <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
+        <div class="text-container">
+            <div class="company-name">GT Distributing</div>
+            <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
+        </div>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+    <nav class="nav-menu" id="navMenu">
+        <ul>
+            <li><a href="/index">Home</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
+            <li><a href="/products">Products</a></li>
+            <li><a href="/OrderForm">Order Form</a></li>
+            <li><a href="/order">Order</a></li>
+            <li><a href="/registration">Registration</a></li>
+            <li><a href="/return">About Us/ Policy</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="slideshow-container">
+    <div class="mySlides fade">
+        <img src="/public/images/gtimage.webp" alt="Slide 1">
+    </div>
+    <div class="mySlides fade">
+        <img src="/public/images/July_2026.png" alt="Slide 2">
+    </div>
+    <div class="mySlides fade">
+        <img src="/public/images/July_new.png" alt="Slide 3">
+    </div>
+    <div class="mySlides fade">
+        <img src="/public/images/new1.webp" alt="Slide 4">
+    </div>
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<footer>
+    <p>Content copyright 2021. GTDISTRIBUTING.COM. All rights reserved.</p>
+    <p>Phone: 352-873-0400  ** Fax: 352-342-9022</p>
+</footer>
+
+<script>
+    function toggleMenu() {
+        var menu = document.querySelector('nav ul');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    document.getElementById("under21Btn").addEventListener("click", function () {
+        document.getElementById("ageVerificationPopup").style.display = "none";
+        document.getElementById("underageMessage").style.display = "block";
+        setTimeout(function () {
+            window.location.href = "https://www.google.com";
+        }, 5000);
+    });
+
+    document.getElementById("over21Btn").addEventListener("click", function () {
+        document.getElementById("ageVerificationPopup").style.display = "none";
+    });
+
+    var slideIndex = 0;
+    var slideInterval;
+
+    function showSlides() {
+        var slides = document.getElementsByClassName("mySlides");
+        for (var i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) {
+            slideIndex = 1;
+        }
+        slides[slideIndex - 1].style.display = "block";
+        slideInterval = setTimeout(showSlides, 9000);
+    }
+
+    function changeSlide(n) {
+        clearTimeout(slideInterval);
+        var slides = document.getElementsByClassName("mySlides");
+        slideIndex += n;
+        if (slideIndex > slides.length) {
+            slideIndex = 1;
+        }
+        if (slideIndex < 1) {
+            slideIndex = slides.length;
+        }
+        for (var i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slides[slideIndex - 1].style.display = "block";
+        slideInterval = setTimeout(showSlides, 9000);
+    }
+
+    showSlides();
+</script>
+
+</body>
+</html>

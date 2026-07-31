@@ -24,6 +24,7 @@ public class RegistrationForm {
     private String cellPhone;
     private String fax;
     private String email;
+    private String paymentMethod;
     private String bankName;
     private String bankPhone;
     private String bankLocation;

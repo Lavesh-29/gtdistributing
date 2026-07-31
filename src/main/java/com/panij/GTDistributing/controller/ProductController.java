@@ -385,79 +385,18 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/submitRegistrationForm")
-    public ResponseEntity<?> submitRegistrationForm(
-            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
-            @RequestParam("recaptchaResponse") String recaptchaResponse,
-
-            // Business Info
-            @RequestParam("legalName") String legalName,
-            @RequestParam("dba") String dba,
-            @RequestParam("address") String address,
-            @RequestParam("city") String city,
-            @RequestParam("state") String state,
-            @RequestParam("zip") String zip,
-            @RequestParam("license") String license,
-            @RequestParam("taxId") String taxId,
-            @RequestParam("salesTax") String salesTax,
-            @RequestParam("businessType") String businessType,
-
-            // Contact Info
-            @RequestParam("contactPerson") String contactPerson,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam("businessPhone") String businessPhone,
-            @RequestParam(value = "cellPhone", required = false) String cellPhone,
-            @RequestParam(value = "fax", required = false) String fax,
-            @RequestParam("email") String email,
-
-            // Bank Info
-            @RequestParam("bankName") String bankName,
-            @RequestParam("bankPhone") String bankPhone,
-            @RequestParam("bankLocation") String bankLocation,
-            @RequestParam("bankContact") String bankContact,
-            @RequestParam("accountNumber") String accountNumber,
-            @RequestParam("routingNumber") String routingNumber,
-
-            // Signature
-            @RequestParam("signatureDataUrl") String signatureDataUrl
-    ) {
-        try {
-            if (!reCaptchaService.verifyRecaptcha(recaptchaResponse)) {
-                return ResponseEntity.badRequest().body("reCAPTCHA verification failed.");
-            }
-
-            RegistrationForm registrationForm = new RegistrationForm(
-                    legalName, dba, address, city, state, zip,
-                    license, taxId, salesTax, businessType,
-                    contactPerson, title, businessPhone, cellPhone, fax,
-                    email, bankName, bankPhone, bankLocation, bankContact,
-                    accountNumber, routingNumber, signatureDataUrl
-            );
-
-            ByteArrayOutputStream pdfOutputStream = createRegistrationPdf(registrationForm);
-            productService.sendRegistrationFormEmail(registrationForm, attachments, pdfOutputStream.toByteArray());
-
-            return ResponseEntity.ok("Registration form submitted successfully!");
-        } catch (MessagingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Email error: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
-        }
-    }
-
     private ByteArrayOutputStream createRegistrationPdf(RegistrationForm form) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-        document.setMargins(20, 20, 20, 20);
+        // Reduced margins to fit everything tightly onto a single page
+        document.setMargins(15, 15, 15, 15);
 
-        document.add(new Paragraph("GT Distributing").setBold().setFontSize(18f).setTextAlignment(TextAlignment.CENTER));
-        document.add(new Paragraph("385 SW 60th Avenue\nOcala, Florida 34474").setTextAlignment(TextAlignment.CENTER));
-        document.add(new Paragraph("Ph (352) 873-0400 Email: sales@gtdistributing.com\nwww.gtdistributing.com").setTextAlignment(TextAlignment.CENTER));
-        document.add(new Paragraph("\nCUSTOMER ACCOUNT INFORMATION & PAYMENT AGREEMENT").setBold().setFontSize(14f).setTextAlignment(TextAlignment.CENTER));
+        document.add(new Paragraph("GT Distributing").setBold().setFontSize(14f).setTextAlignment(TextAlignment.CENTER).setMarginBottom(0));
+        document.add(new Paragraph("385 SW 60th Avenue | Ocala, Florida 34474").setFontSize(9f).setTextAlignment(TextAlignment.CENTER).setMarginBottom(0));
+        document.add(new Paragraph("Ph (352) 873-0400 | Email: sales@gtdistributing.com | www.gtdistributing.com").setFontSize(9f).setTextAlignment(TextAlignment.CENTER).setMarginBottom(4));
+        document.add(new Paragraph("CUSTOMER ACCOUNT INFORMATION & PAYMENT AGREEMENT").setBold().setFontSize(11f).setTextAlignment(TextAlignment.CENTER).setMarginBottom(4));
 
         Table formTable = new Table(UnitValue.createPercentArray(new float[]{1, 2, 1, 2})).useAllAvailableWidth();
 
@@ -478,8 +417,8 @@ public class ProductController {
 
         formTable.addCell(cell("Sales Tax#:", true));
         formTable.addCell(cell(form.getSalesTax()));
-        formTable.addCell(cell("Drivers License#:", true));
-        formTable.addCell(cell("")); // blank
+        formTable.addCell(cell("Payment Method:", true));
+        formTable.addCell(cell("ach".equals(form.getPaymentMethod()) ? "ACH / Bank Draft" : "Cash / Written Check"));
 
         formTable.addCell(cell("Type of Business:", true));
         formTable.addCell(cell(form.getBusinessType()));
@@ -498,66 +437,72 @@ public class ProductController {
 
         formTable.addCell(cell("Email:", true));
         formTable.addCell(cell(form.getEmail()));
-        formTable.addCell(cell("")); // blank
+        formTable.addCell(cell(""));
         formTable.addCell(cell(""));
 
         document.add(formTable);
 
-        document.add(new Paragraph("\nTERM & CONDITION").setBold());
-        document.add(new Paragraph("\nAGREEMENT").setBold());
-        document.add(new Paragraph("By signing this Agreement, Customer accept the above Terms and Conditions as stated."));
+        // Conditional Check Draft Authorization Section for PDF (Included only if ACH is chosen)
+        if ("ach".equals(form.getPaymentMethod())) {
+            document.add(new Paragraph("Check Draft Authorization Agreement").setBold().setFontSize(10f).setMarginTop(4f).setMarginBottom(2f));
 
-        Table signatureTable = new Table(3).useAllAvailableWidth().setMarginTop(10f);
-        DashedBorder dashed = new DashedBorder(0.5f);
-        signatureTable.addCell(cell("Signature of Authorized Representative", false));
-//        signatureTable.addCell(cell("Name & Title", false));
-         signatureTable.addCell(cell("Date", false));
-           String todayDate = java.time.LocalDate.now().toString();
-//        signatureTable.addCell(new Cell().add(new Paragraph("__________________________").setBorder(dashed)));
-//        signatureTable.addCell(new Cell().add(new Paragraph("__________________________").setBorder(dashed)));
-//        signatureTable.addCell(new Cell().add(new Paragraph("__________________________").setBorder(dashed)));
+            String contactName = (form.getContactPerson() != null && !form.getContactPerson().isEmpty()) ? form.getContactPerson() : "Authorized Representative";
+            String storeName = (form.getDba() != null && !form.getDba().isEmpty()) ? form.getDba() : form.getLegalName();
+
+            String checkAuthText = "I, " + contactName + ", as the authorized account holder, do hereby authorize GT Distributing to duplicate the attached, or otherwise provided check, in bank draft form. " +
+                    "This is an open authorization to allow debits to my account in check form for amounts which will vary per transaction based on the order amount at delivery. " +
+                    "In lieu of a check number, GT Distributing will use the invoice number as a reference for payments processed. " +
+                    "I have read and agree to all the terms and conditions on this page " +
+                    "I understand that this is a legal binding agreement between GT Distributing and " + storeName + ". " +
+                    "This agreement remains in effect until written cancellation is received.";
+
+            document.add(new Paragraph(checkAuthText).setFontSize(7.5f).setMarginTop(0f).setMarginBottom(4f));
+
+            Table checkTable = new Table(2).useAllAvailableWidth().setMarginTop(2f);
+            checkTable.addCell(cell("Bank Name:", true));
+            checkTable.addCell(cell(form.getBankName()));
+            checkTable.addCell(cell("Bank Location:", true));
+            checkTable.addCell(cell(form.getBankLocation()));
+            checkTable.addCell(cell("Checking Account #:", true));
+            checkTable.addCell(cell(form.getAccountNumber()));
+            checkTable.addCell(cell("Routing #:", true));
+            checkTable.addCell(cell(form.getRoutingNumber()));
+
+            document.add(checkTable);
+        } else {
+            document.add(new Paragraph("Payment Method: Cash / Written Check (Bank info skipped)").setBold().setFontSize(9f).setMarginTop(4f));
+        }
+
+        document.add(new Paragraph("TERM & CONDITION: By signing this Agreement, Customer accepts all Terms and Conditions as stated.").setFontSize(8f).setMarginTop(4f).setMarginBottom(2f));
+
+        Table signatureTable = new Table(2).useAllAvailableWidth().setMarginTop(2f);
+        signatureTable.addCell(cell("Signature of Authorized Representative", true));
+        signatureTable.addCell(cell("Date: " + java.time.LocalDate.now().toString(), true));
 
         document.add(signatureTable);
 
-        // 🖊️ Signature Image
+        // 🖊️ Signature Image scaled smaller to guarantee one-page fit
         if (form.getSignatureDataUrl() != null && form.getSignatureDataUrl().startsWith("data:image")) {
             String base64 = form.getSignatureDataUrl().split(",")[1];
             byte[] decoded = Base64.getDecoder().decode(base64);
             ImageData imageData = ImageDataFactory.create(decoded);
-            Image signatureImage = new Image(imageData).scaleToFit(150, 50).setMarginTop(10f);
-//            document.add(new Paragraph("\nDigital Signature:").setBold());
+            Image signatureImage = new Image(imageData).scaleToFit(120, 35).setMarginTop(2f);
             document.add(signatureImage);
         }
-
-        Table checkTable = new Table(2).useAllAvailableWidth().setMarginTop(10f);
-        checkTable.addCell(cell("Bank Name:"));
-        checkTable.addCell(cell(form.getBankName()));
-        checkTable.addCell(cell("Phone:"));
-        checkTable.addCell(cell(form.getBankPhone()));
-        checkTable.addCell(cell("Bank Location:"));
-        checkTable.addCell(cell(form.getBankLocation()));
-        checkTable.addCell(cell("Contact:"));
-        checkTable.addCell(cell(form.getBankContact()));
-        checkTable.addCell(cell("Checking Account #:"));
-        checkTable.addCell(cell(form.getAccountNumber()));
-        checkTable.addCell(cell("Routing #:"));
-        checkTable.addCell(cell(form.getRoutingNumber()));
-
-        document.add(checkTable);
 
         document.close();
         return outputStream;
     }
 
-    // 🔧 Helper for clean table cells
+    // 🔧 Helper for clean, compact table cells
     private Cell cell(String content) {
-        return new Cell().add(new Paragraph(content)).setBorder(Border.NO_BORDER);
+        return new Cell().add(new Paragraph(content != null ? content : "").setFontSize(8f)).setBorder(Border.NO_BORDER).setPadding(1f);
     }
 
     private Cell cell(String content, boolean bold) {
-        Paragraph paragraph = new Paragraph(content);
+        Paragraph paragraph = new Paragraph(content != null ? content : "").setFontSize(8f);
         if (bold) paragraph.setBold();
-        return new Cell().add(paragraph).setBorder(Border.NO_BORDER);
+        return new Cell().add(paragraph).setBorder(Border.NO_BORDER).setPadding(1f);
     }
     @GetMapping("/api/validateItem/{upc}")
     @ResponseBody // tells Spring to return JSON, not HTML

@@ -385,6 +385,88 @@ public class ProductController {
         }
     }
 
+    @PostMapping("/submitRegistrationForm")
+    public ResponseEntity<?> submitRegistrationForm(
+            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
+            @RequestParam("recaptchaResponse") String recaptchaResponse,
+
+            // Business Info
+            @RequestParam("legalName") String legalName,
+            @RequestParam("dba") String dba,
+            @RequestParam("address") String address,
+            @RequestParam("city") String city,
+            @RequestParam("state") String state,
+            @RequestParam("zip") String zip,
+            @RequestParam("license") String license,
+            @RequestParam("taxId") String taxId,
+            @RequestParam("salesTax") String salesTax,
+            @RequestParam("businessType") String businessType,
+            @RequestParam("paymentMethod") String paymentMethod,
+
+            // Contact Info
+            @RequestParam("contactPerson") String contactPerson,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam("businessPhone") String businessPhone,
+            @RequestParam(value = "cellPhone", required = false) String cellPhone,
+            @RequestParam(value = "fax", required = false) String fax,
+            @RequestParam("email") String email,
+
+            // Bank Info
+            @RequestParam("bankName") String bankName,
+            @RequestParam("bankPhone") String bankPhone,
+            @RequestParam("bankLocation") String bankLocation,
+            @RequestParam("bankContact") String bankContact,
+            @RequestParam("accountNumber") String accountNumber,
+            @RequestParam("routingNumber") String routingNumber,
+
+            // Signature
+            @RequestParam("signatureDataUrl") String signatureDataUrl
+    ) {
+        try {
+            if (!reCaptchaService.verifyRecaptcha(recaptchaResponse)) {
+                return ResponseEntity.badRequest().body("reCAPTCHA verification failed.");
+            }
+
+            // 🔽 REPLACE THE OLD "new RegistrationForm(...)" WITH THIS SETTER BLOCK:
+            RegistrationForm registrationForm = new RegistrationForm();
+            registrationForm.setLegalName(legalName);
+            registrationForm.setDba(dba);
+            registrationForm.setAddress(address);
+            registrationForm.setCity(city);
+            registrationForm.setState(state);
+            registrationForm.setZip(zip);
+            registrationForm.setLicense(license);
+            registrationForm.setTaxId(taxId);
+            registrationForm.setSalesTax(salesTax);
+            registrationForm.setBusinessType(businessType);
+            registrationForm.setPaymentMethod(paymentMethod);
+            registrationForm.setContactPerson(contactPerson);
+            registrationForm.setTitle(title);
+            registrationForm.setBusinessPhone(businessPhone);
+            registrationForm.setCellPhone(cellPhone);
+            registrationForm.setFax(fax);
+            registrationForm.setEmail(email);
+            registrationForm.setBankName(bankName);
+            registrationForm.setBankPhone(bankPhone);
+            registrationForm.setBankLocation(bankLocation);
+            registrationForm.setBankContact(bankContact);
+            registrationForm.setAccountNumber(accountNumber);
+            registrationForm.setRoutingNumber(routingNumber);
+            registrationForm.setSignatureDataUrl(signatureDataUrl);
+            // 🔼 END OF REPLACEMENT
+
+            ByteArrayOutputStream pdfOutputStream = createRegistrationPdf(registrationForm);
+            productService.sendRegistrationFormEmail(registrationForm, attachments, pdfOutputStream.toByteArray());
+
+            return ResponseEntity.ok("Registration form submitted successfully!");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Email error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+    }
     private ByteArrayOutputStream createRegistrationPdf(RegistrationForm form) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
@@ -452,7 +534,7 @@ public class ProductController {
             String checkAuthText = "I, " + contactName + ", as the authorized account holder, do hereby authorize GT Distributing to duplicate the attached, or otherwise provided check, in bank draft form. " +
                     "This is an open authorization to allow debits to my account in check form for amounts which will vary per transaction based on the order amount at delivery. " +
                     "In lieu of a check number, GT Distributing will use the invoice number as a reference for payments processed. " +
-                    "I have read and agree to all the terms and conditions on this page " +
+                    "I have read and agree to all the terms and conditions on this page. " +
                     "I understand that this is a legal binding agreement between GT Distributing and " + storeName + ". " +
                     "This agreement remains in effect until written cancellation is received.";
 

@@ -18,13 +18,13 @@ public class RegistrationForm {
     private String taxId;
     private String salesTax;
     private String businessType;
+    private String paymentMethod; // 👈 Moved here to match your controller constructor order
     private String contactPerson;
     private String title;
     private String businessPhone;
     private String cellPhone;
     private String fax;
     private String email;
-    private String paymentMethod;
     private String bankName;
     private String bankPhone;
     private String bankLocation;
@@ -32,5 +32,4 @@ public class RegistrationForm {
     private String accountNumber;
     private String routingNumber;
     private String signatureDataUrl;
-
 }

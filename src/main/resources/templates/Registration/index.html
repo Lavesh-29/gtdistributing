@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GT Distributing-Registration Form</title>
+    <title>GT Distributing - Registration Form</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
         :root {
-            --primary-color: #1e3a8a;
-            --primary-hover: #1e40af;
-            --accent-color: #f3f4f6;
-            --border-radius: 8px;
+            --primary-color: #000000;
+            --border-color: #808080;
             --transition-speed: 0.25s;
         }
 
@@ -33,10 +30,10 @@
             line-height: 1.5;
         }
 
-        /* Header Styling: Background Black, Text White, Border Grey */
+        /* Header Styling */
         header {
             background-color: #000000;
-            border-bottom: 1px solid #808080;
+            border-bottom: 1px solid var(--border-color);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
@@ -96,15 +93,15 @@
             color: #ffffff;
         }
 
-        /* Form Container Layout: Background White, Borders Grey */
+        /* Form Container Layout */
         .formcontainer {
             max-width: 900px;
             margin: 40px auto;
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid #808080;
-            border-top: 5px solid #808080;
+            border: 1px solid var(--border-color);
+            border-top: 5px solid var(--border-color);
             padding: 40px;
             position: relative;
         }
@@ -114,17 +111,17 @@
             color: #000000;
             margin-bottom: 25px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #808080;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        /* Payment Method Row Styling Inside Form Grid Layout */
+        /* Payment Method Row Styling */
         .payment-method-row {
             display: flex;
             gap: 30px;
             align-items: center;
             background-color: #ffffff;
             padding: 12px 14px;
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             width: 100%;
         }
@@ -146,15 +143,14 @@
             accent-color: #000000;
         }
 
-        /* Conditional Section Wrapper */
         #achSection {
             transition: all 0.3s ease;
         }
 
-        /* Check Authorization Legal Text Box: Background White, Text Black, Border Grey */
+        /* Check Authorization Legal Text Box */
         .auth-text-box {
             background-color: #ffffff;
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 20px;
             font-size: 0.85rem;
@@ -167,6 +163,7 @@
 
         .auth-text-box h4 {
             color: #000000;
+            margin-bottom: 8px;
         }
 
         .auth-text-box p {
@@ -182,7 +179,7 @@
             margin-bottom: 25px;
             background-color: #ffffff;
             padding: 12px 15px;
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
         }
 
@@ -232,7 +229,7 @@
         .form-group textarea {
             width: 100%;
             padding: 10px 14px;
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 0.95rem;
             color: #000000;
@@ -250,7 +247,7 @@
 
         /* Signature Section Styles */
         .signature-container {
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 15px;
             background: #ffffff;
@@ -259,7 +256,7 @@
 
         #signaturePad {
             background: #ffffff;
-            border: 1px dashed #808080;
+            border: 1px dashed var(--border-color);
             border-radius: 4px;
             width: 100%;
             max-width: 500px;
@@ -285,7 +282,7 @@
 
         /* File Upload Styling */
         .file-upload-wrapper {
-            border: 2px dashed #808080;
+            border: 2px dashed var(--border-color);
             padding: 20px;
             border-radius: 6px;
             text-align: center;
@@ -306,7 +303,7 @@
             background: #ffffff;
             color: #000000;
             padding: 6px 12px;
-            border: 1px solid #808080;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 5px;
             display: flex;
@@ -356,7 +353,7 @@
             padding: 30px;
             color: #ffffff;
             font-size: 0.85rem;
-            border-top: 1px solid #808080;
+            border-top: 1px solid var(--border-color);
             margin-top: 50px;
             background-color: #000000;
         }
@@ -515,7 +512,7 @@
 
         <h3 style="color: #000000; text-decoration: underline; margin-top: 20px; margin-bottom: 20px;">COPY OF TOBACCO & PERSONAL DRIVER LICENSE Must Be Attached</h3>
 
-        <!-- Payment Method Selection formatted as a full-width row box -->
+        <!-- Payment Method Selection -->
         <div class="form-row">
             <div class="form-group full-width">
                 <label>Select Payment Method:</label>
@@ -528,21 +525,19 @@
 
         <!-- Conditional Bank Info & Check Draft Section -->
         <div id="achSection">
-            <h3 style="color: #000000; text-decoration: underline; margin-top: 20px; margin-bottom: 20px;">Check Acceptance (Copy of Check Must Be Attached)</h3>
+            <h3 style="color: #000000; text-decoration: underline; margin-top: 20px; margin-bottom: 20px;">Check Acceptance (Void Check & Copy of Check Must Be Attached)</h3>
 
-            <!-- Check Draft Authorization Text extracted from PDF -->
             <div class="auth-text-box">
-                <h4 style="color: #000000; margin-bottom: 8px;">Check Draft Authorization Form</h4>
+                <h4>Check Draft Authorization Form</h4>
                 <p>I, as the authorized account holder, do hereby authorize GT Distributing to duplicate the attached, or otherwise provided check, in bank draft form. This is an open authorization to allow debits to my account in check form for amounts which will vary per transaction based on the order amount at delivery.</p>
                 <p>In lieu of a check number, GT Distributing will use the invoice number as a reference for payments processed. I have read and agree to all the terms and conditions on this page, and any other contract or document that accompanies this agreement. I certify that I am the authorized account holder for this check account.</p>
                 <p>I understand that this is a legal binding agreement between GT Distributing and the designated company/store name. This agreement will remain in effect until GT Distributing receives my written notice of cancellation via mail, fax or email. In the event bank account information changes (new account, change of bank, etc.), I agree to promptly notify GT Distributing of such change.</p>
                 <p>I understand that any check payment returned from the customer's account, the entire amount due plus applicable service charge will become due and payable immediately. I also understand that a second occurrence within 90 days will result in discontinuation of delivery and/or alternate pre-payment arrangements.</p>
             </div>
 
-            <!-- Required Checkbox directly beneath the text box -->
             <div class="checkbox-group">
                 <input type="checkbox" id="authAgreement" name="authAgreement" required>
-                <label for="authAgreement">I have read, understood, and agree to the Check Draft Authorization terms and conditions stated above[cite: 1].</label>
+                <label for="authAgreement">I have read, understood, and agree to the Check Draft Authorization terms and conditions stated above.</label>
             </div>
 
             <div class="form-row">
@@ -594,8 +589,8 @@
 
         <div class="form-group full-width" style="margin-top: 20px;">
             <div class="file-upload-wrapper">
-                <label for="attachments" style="cursor: pointer; font-weight: 600; color: #000000;">Attachment (Images/PDF): Click or drag files here</label>
-                <input type="file" class="form-control-file" id="attachments" name="attachments" multiple style="margin-top: 10px; color: #000000;">
+                <label for="attachments" style="cursor: pointer; font-weight: 600; color: #000000;">Attachments (Tobacco/Driver License & Void Check) <span style="color: red;">*</span>: Click or drag files here</label>
+                <input type="file" class="form-control-file" id="attachments" name="attachments" multiple required style="margin-top: 10px; color: #000000;">
                 <ul id="fileList"></ul>
             </div>
         </div>
@@ -639,6 +634,12 @@
         const form = document.getElementById("registrationForm");
         form.addEventListener("submit", function (e) {
             e.preventDefault();
+
+            const fileInput = document.getElementById('attachments');
+            if (fileInput.files.length === 0) {
+                alert("Please attach the required documents (Tobacco/Driver License & Void Check).");
+                return;
+            }
 
             if (signaturePad.isEmpty()) {
                 alert("Please provide a signature.");

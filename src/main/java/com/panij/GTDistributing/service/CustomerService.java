@@ -14,7 +14,6 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
-
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
@@ -23,6 +22,12 @@ public class CustomerService {
         return customerRepository.findById(custNo);
     }
 
+    // Added to match the controller call: customerService.saveCustomer(...)
+    public Customer saveCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    // Kept your original addCustomer method as well
     public Customer addCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
@@ -39,7 +44,6 @@ public class CustomerService {
         customerRepository.deleteById(custNo);
     }
 
-
     public boolean checkCustomerExists(Integer custNo) {
         boolean exists = customerRepository.existsByCustNo(custNo);
         System.out.println("Checking existence for custNo=" + custNo + ": " + exists);
@@ -49,8 +53,9 @@ public class CustomerService {
     public Optional<Customer> validateCustomer(Integer custNo, String password) {
         return customerRepository.findByCustNoAndPassword(custNo, password);
     }
+
     public Optional<Customer> findCustomerByPassword(String password) {
         List<Customer> customers = customerRepository.findByPassword(password);
-       return customers.isEmpty() ? Optional.empty() : Optional.of(customers.get(0));
+        return customers.isEmpty() ? Optional.empty() : Optional.of(customers.get(0));
     }
 }

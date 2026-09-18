@@ -151,6 +151,12 @@
                    th:checked="${product.isNew == 1}" name="isNew" value="1">
             <label class="form-check-label" for="isNew">Mark as New</label>
         </div>
+        <div class="form-group">
+            <label class="col-form-label" for="qty_limit">Quantity Limit:</label>
+            <input id="qty_limit" class="form-control" type="number" th:field="${product.qty_limit}"
+                   aria-label="Quantity Limit">
+            <p th:if="${#fields.hasErrors('qty_limit')}" class="text-danger" th:errors="${product.qty_limit}"></p>
+        </div>
 
         <div class="image-preview">
             <input type="file" class="form-control" name="imageFile" onchange="previewFile()">

@@ -17,68 +17,22 @@ public class CustomerWebController {
     @Autowired
     private CustomerService customerService;
 
-    // =====================================================
-    // SHOW ADD CUSTOMER PAGE
-    // GET: http://localhost:8080/customers/add
-    // =====================================================
     @GetMapping("/add")
     public String showAddCustomerForm(Model model) {
-
         model.addAttribute("customer", new Customer());
-
-        return "Admin/addCustomer";
+        return "Admin/addCustomer.html"; // Name of your addCustomer.html file
     }
 
-
-    // =====================================================
-    // ADD / SAVE CUSTOMER
-    // POST: http://localhost:8080/customers/add
-    // =====================================================
     @PostMapping("/add")
-    public String addCustomer(
-            @ModelAttribute("customer") Customer customer,
-            Model model) {
-
-        try {
-
-            Customer savedCustomer =
-                    customerService.addCustomer(customer);
-
-            model.addAttribute(
-                    "message",
-                    "Customer added successfully with ID: "
-                            + savedCustomer.getCustNo()
-            );
-
-            model.addAttribute("success", true);
-
-        } catch (Exception e) {
-
-            model.addAttribute(
-                    "message",
-                    "Error adding customer: " + e.getMessage()
-            );
-
-            model.addAttribute("success", false);
-        }
-
-        // Success/error page
-        return "custadmin/add-customer";
+    public String addCustomer(@ModelAttribute Customer customer, Model model) {
+        Customer savedCustomer = customerService.addCustomer(customer);
+        model.addAttribute("message", "Customer added successfully with ID: " + savedCustomer.getCustNo());
+        return "custadmin/add-customer"; // Name of your customer-success.html file
     }
 
-
-    // =====================================================
-    // CUSTOMER LIST
-    // GET: http://localhost:8080/customers/list
-    // =====================================================
     @GetMapping("/list")
     public String listCustomers(Model model) {
-
-        model.addAttribute(
-                "customers",
-                customerService.getAllCustomers()
-        );
-
-        return "customerList";
+        model.addAttribute("customers", customerService.getAllCustomers());
+        return "customerList"; // Name of your customerList.html file
     }
 }

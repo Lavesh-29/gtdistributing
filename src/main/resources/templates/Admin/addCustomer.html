@@ -1,50 +1,405 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>GT Distributing - Add Customer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Customer - GT Distributing</title>
+
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; font-family: Arial, sans-serif; background-color: #f0f0f0; }
-        body { display: flex; flex-direction: column; }
-        main { flex: 1; }
-        header { width: 100%; padding: 6px 10px; background-color: #222; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .logo { display: flex; align-items: center; }
-        .logo img { width: 90px; height: auto; }
-        .text-container { margin-left: 10px; }
-        .company-name, .white-text { color: white; }
-        nav ul { display: flex; list-style: none; flex-wrap: wrap; }
-        nav ul li { margin: 5px 10px; }
-        nav ul li a { color: #fff; text-decoration: none; padding: 5px 10px; font-weight: 500; }
-        nav ul li a:hover { background-color: lightgrey; color: #000; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        .form-container { margin-top: 20px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .form-row { display: flex; flex-wrap: wrap; gap: 15px; }
-        .form-row .form-group { flex: 1; min-width: 200px; }
-        .btn { display: inline-block; margin-top: 10px; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; color: #fff; }
-        .btn-primary { background-color: #007bff; }
-        .btn-secondary { background-color: #6c757d; margin-left: 10px; }
-        footer { background-color: #000; color: #fff; padding: 20px; text-align: center; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f4f6;
+            color: #222;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #000;
+            color: #fff;
+            padding: 18px 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.20);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+        }
+
+        .company-info {
+            text-align: left;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .company-address {
+            margin-top: 4px;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #ddd;
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            margin-top: 18px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        nav ul li a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.2s ease;
+        }
+
+        nav ul li a:hover {
+            background: #222;
+            color: #4da3ff;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .page-container {
+            min-height: calc(100vh - 250px);
+            padding: 40px 20px 50px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+            overflow: hidden;
+        }
+
+        /* =========================
+           FORM HEADER
+        ========================= */
+
+        .form-header {
+            background: linear-gradient(135deg, #111, #292929);
+            color: #fff;
+            padding: 25px 30px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .form-header p {
+            margin: 7px 0 0;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        /* =========================
+           FORM BODY
+        ========================= */
+
+        form {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-number {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #111;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #222;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-grid.four-columns {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .required {
+            color: #d60000;
+            margin-left: 3px;
+        }
+
+        input {
+            width: 100%;
+            height: 46px;
+            padding: 0 13px;
+            border: 1px solid #d2d2d2;
+            border-radius: 7px;
+            background: #fff;
+            color: #222;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:hover {
+            border-color: #aaa;
+        }
+
+        input:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        /* =========================
+           PASSWORD
+        ========================= */
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 90px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            height: 32px;
+            padding: 0 10px;
+            border: none;
+            border-radius: 5px;
+            background: #eee;
+            color: #333;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .password-toggle:hover {
+            background: #ddd;
+        }
+
+        /* =========================
+           FORM FOOTER / BUTTONS
+        ========================= */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 18px;
+            margin-top: 10px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            min-width: 145px;
+            height: 46px;
+            padding: 0 22px;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            border: none;
+            background: #111;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #f2f2f2;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 22px 15px;
+        }
+
+        footer p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        footer p:first-child {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .form-grid.four-columns {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .header-top {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .company-info {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            header {
+                padding: 15px 15px 0;
+            }
+
+            .company-name {
+                font-size: 23px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            nav ul li a {
+                text-align: center;
+                border-radius: 5px;
+            }
+
+
     </style>
 </head>
 <body>
 
 <header>
     <div class="logo">
+        <img src="/public/images/image.png" alt="Logo">
         <div class="text-container">
-            <div class="company-name" style="font-size: 24px; font-weight: bold;">GT Distributing</div>
+            <div class="company-name">GT Distributing</div>
             <span class="white-text">385 SW 60th Ave<br>Ocala, Florida 34474</span>
         </div>
     </div>
     <nav>
         <ul>
             <li><a href="/index">Home</a></li>
-            <li><a href="/Promotion">Promotion</a></li>
+<!--            <li><a href="/Promotion">Promotion</a></li>-->
             <li><a href="/products">Products</a></li>
             <li><a href="/OrderForm">Order Form</a></li>
             <li><a href="/order">Order</a></li>
@@ -54,79 +409,86 @@
     </nav>
 </header>
 
-<main>
-    <div class="container">
-        <h1 style="text-align: center; width: 100%;">Add New Customer</h1>
+<div class="container">
+    <div class="form-container">
+        <!-- Fixed form action and added th:object/th:field bindings -->
+        <form th:action="@{/customers/add}" th:object="${customer}" method="post">
+            <div class="form-group">
+                <label for="custNo">Customer Number</label>
+                <input type="number" id="custNo" th:field="*{custNo}" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+            <div class="form-group">
+                <label for="name2">Name 2</label>
+                <input type="text" id="name2" th:field="*{name2}">
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" th:field="*{address}" required>
+            </div>
+            <div class="form-group">
+                <label for="address2">Address 2</label>
+                <input type="text" id="address2" th:field="*{address2}">
+            </div>
 
-        <!-- Success message alert -->
-        <div th:if="${param.success}" style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center;">
-            Customer added successfully!
-        </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" th:field="*{city}" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" th:field="*{state}" required>
+                </div>
+                <div class="form-group">
+                    <label for="county">County</label>
+                    <input type="text" id="county" th:field="*{county}" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">Zip Code</label>
+                    <input type="text" id="zip" th:field="*{zip}" required>
+                </div>
+            </div>
 
-        <div class="form-container">
-            <!-- Points directly to POST /customer -->
-            <form th:action="@{/customer}" th:method="post" th:object="${customer}">
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="custNo">Customer Number</label>
-                    <input type="number" id="custNo" th:field="*{custNo}" required>
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone" th:field="*{phone}" required>
                 </div>
                 <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" th:field="*{name}" required>
+                    <label for="altPhone">Alternate Phone</label>
+                    <input type="text" id="altPhone" th:field="*{altPhone}">
                 </div>
-                <div class="form-group">
-                    <label for="name2">Name 2</label>
-                    <input type="text" id="name2" th:field="*{name2}">
-                </div>
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" th:field="*{address}" required>
-                </div>
-                <div class="form-group">
-                    <label for="address2">Address 2</label>
-                    <input type="text" id="address2" th:field="*{address2}">
-                </div>
+            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" th:field="*{city}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" id="state" th:field="*{state}">
-                    </div>
-                    <div class="form-group">
-                        <label for="county">County</label>
-                        <input type="text" id="county" th:field="*{county}">
-                    </div>
-                    <div class="form-group">
-                        <label for="zip">Zip Code</label>
-                        <input type="text" id="zip" th:field="*{zip}">
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" th:field="*{password}">
+            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="text" id="phone" th:field="*{phone}">
-                    </div>
-                    <div class="form-group">
-                        <label for="altPhone">Alternate Phone</label>
-                        <input type="text" id="altPhone" th:field="*{altPhone}">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" th:field="*{password}" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Customer</button>
-                <a href="/index" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+            <button type="submit" class="btn btn-primary">Add Customer</button>
+            <a href="/index" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
-</main>
+</div>
+<script th:inline="javascript">
+
+    const success = /*[[${param.success}]]*/ null;
+
+    if (success && success.includes("true")) {
+
+        setTimeout(function () {
+
+            alert("Customer added successfully!");
+
+        }, 200);
+
+    }
+
+</script>
 
 <footer>
     <p>&copy; 2026 GTDISTRIBUTING.COM. All rights reserved.</p>

@@ -28,16 +28,15 @@ public class CustomerService {
     }
 
     // Kept your original addCustomer method as well
-    public Customer addCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public void addCustomer(Customer customer) {
+        customerRepository.save(customer);
     }
 
-    public Customer updateCustomer(Integer custNo, Customer updatedCustomer) {
+    public void updateCustomer(Integer custNo, Customer updatedCustomer) {
         if (customerRepository.existsById(custNo)) {
             updatedCustomer.setCustNo(custNo);
-            return customerRepository.save(updatedCustomer);
+            customerRepository.save(updatedCustomer);
         }
-        return null; // Or throw an exception
     }
 
     public void deleteCustomer(Integer custNo) {

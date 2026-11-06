@@ -391,6 +391,24 @@
                 gap: 10px;
             }
         }
+        .order-total-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    background: #f2f6fa;
+    border-radius: 8px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+}
+
+#orderTotal {
+    color: #008000;
+    font-size: 26px;
+}
     </style>
 
 </head>
@@ -477,15 +495,22 @@
         <label style="margin-left: 20px;">
             <input type="checkbox" id="newOnlyCheckbox" onchange="filterByCategory()"> New Items Only
         </label>
+        <div class="order-total-container" style="margin-left: auto; white-space: nowrap;">
+            <span>Order Total:</span>
+            <span id="orderTotal">$0.00</span>
+        </div>
 <!--        <button id="dealsButton" onclick="openDeals()" style="flex: none;">Deals</button>-->
     </div>
+
     <table id="productTable">
         <thead>
         <tr>
             <th>Image</th>
             <th>Item Ref No</th>
             <th>Description</th>
+            <th>Unit Price</th>
             <th>QTY</th>
+
         </tr>
         </thead>
 
@@ -513,6 +538,8 @@
 
             <td th:text="${product.item_Ref}"></td>
             <td th:text="${product.description}"></td>
+            <!-- Sell Unit Price -->
+            <td th:text="${product.sell_Unit_Price != null ? '$' + product.sell_Unit_Price : '$0.00'}"></td>
 
             <td>
                 <div class="quantity-container">
@@ -676,6 +703,7 @@
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <script>
+
     document.addEventListener("DOMContentLoaded", () => {
     const cameraBtn = document.getElementById("cameraBtn");
     cameraBtn.addEventListener("click", toggleScanner);
@@ -983,7 +1011,7 @@ function changeQuantity(button, delta) {
 
     // Save to localStorage here:
     updateLocalStorage(input.closest('tr').cells[1].textContent, newQty);
-
+calculateOrderTotal();
 }
 function updateLocalStorage(itemRef, quantity) {
                              let orderItems = JSON.parse(localStorage.getItem('orderItems')) || {};
@@ -1114,7 +1142,7 @@ function updateQuantity(itemRef, change) {
         removeItem(itemRef);
         return;
     }
-
+calculateOrderTotal();
     // ✅ Sync with main table and update preview
     qtyElement.innerText = newQty;
     matchedRow.querySelector(".quantity-input").value = newQty;
@@ -1183,7 +1211,7 @@ function handleManualQuantityChange(input) {
 
     const categoryMatch = selectedCategory === "" || category === selectedCategory;
     const newItemMatch = !newOnly || isNew;
-
+calculateOrderTotal();
     row.style.display = (categoryMatch && newItemMatch) ? "" : "none";
   });
 }
@@ -1409,11 +1437,27 @@ if (cameraBtn) cameraBtn.addEventListener("click", toggleScanner);
 document.addEventListener("DOMContentLoaded", () => {
     if (cameraBtn && !isMobileDevice()) cameraBtn.style.display = "none";
 });
+function calculateOrderTotal() {
+    let total = 0;
 
+    document.querySelectorAll("#productTable tbody tr").forEach(row => {
+        let price = parseFloat(row.dataset.sellUnitPrice) || 0;
+
+        let quantityInput = row.querySelector(".quantity-input");
+        let quantity = parseFloat(quantityInput.value) || 0;
+
+        total += price * quantity;
+    });
+
+    document.getElementById("orderTotal").textContent =
+        "$" + total.toFixed(2);
+}
 window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('isAuthenticated');
 });
-
+ document.addEventListener("DOMContentLoaded", function() {
+        calculateOrderTotal();
+    })
 </script>
 </body>
 </html>

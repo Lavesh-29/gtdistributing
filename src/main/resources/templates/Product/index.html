@@ -293,88 +293,133 @@
     <p>Phone: 352-873-0400 | Fax: 352-342-9022</p>
 
 </footer>
-
 <script>
 
-    /* IMAGE MODAL */
+    /* =====================================
+       IMAGE MODAL
+    ===================================== */
 
-    function showImage(src){
-    document.getElementById("imageModal").style.display="flex"
-    document.getElementById("modalImage").src=src
+    function showImage(src) {
+        document.getElementById("imageModal").style.display = "flex";
+        document.getElementById("modalImage").src = src;
     }
 
-    function closeModal(e){
-    if(e.target.id==="imageModal" || e.target.classList.contains("close")){
-    document.getElementById("imageModal").style.display="none"
+    function closeModal(e) {
+        if (
+            e.target.id === "imageModal" ||
+            e.target.classList.contains("close")
+        ) {
+            document.getElementById("imageModal").style.display = "none";
+        }
     }
-    }
 
-    /* SEARCH */
 
-    // document.getElementById("searchInput").addEventListener("input",function(){
-    //
-    // const value=this.value.toUpperCase()
-    // const cards=document.querySelectorAll(".product-card")
-    //
-    // cards.forEach(card=>{
-    //
-    // const desc=card.querySelector(".product-title").textContent.toUpperCase()
-    // const upc=(card.dataset.upc||"").toUpperCase()
-    // const item=(card.dataset.item||"").toUpperCase()
-    //
-    // if(desc.includes(value)||upc.includes(value)||item.includes(value))
-    // card.style.display="block"
-    // else
-    // card.style.display="none"
-    //
-    // })
-    //
-    // })
-    document.getElementById("searchInput").addEventListener("input", function () {
+    /* =====================================
+       SEARCH
+    ===================================== */
 
-        const terms = this.value.toUpperCase().trim().split(/\s+/);
+    document.getElementById("searchInput")
+        .addEventListener("input", filterProducts);
+
+
+    /* =====================================
+       PRODUCT FILTER
+    ===================================== */
+
+    function filterProducts() {
+
+        const filter = document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toUpperCase();
+
+        const category = document
+            .getElementById("categoryDropdown")
+            .value
+            .trim()
+            .toLowerCase();
+
+        const newOnly = document
+            .getElementById("newOnlyCheckbox")
+            .checked;
+
         const cards = document.querySelectorAll(".product-card");
+
 
         cards.forEach(card => {
 
-            const desc = card.querySelector(".product-title").textContent.toUpperCase();
-            const upc = (card.dataset.upc || "").toUpperCase();
-            const item = (card.dataset.item || "").toUpperCase();
+            // PRODUCT ITEM REFERENCE
+            const txtItemRef = (
+                card.dataset.item || ""
+            ).trim().toUpperCase();
 
-            const text = `${desc} ${upc} ${item}`;
 
-            const match = terms.every(term => text.includes(term));
+            // PRODUCT DESCRIPTION
+            const txtDescription = (
+                card.querySelector(".product-title").textContent || ""
+            ).trim().toUpperCase();
 
-            card.style.display = match ? "block" : "none";
+
+            // PRODUCT UPC
+            const upc = card.dataset.upc || "";
+
+            const upcValue = upc
+                ? upc.trim().toUpperCase()
+                : "";
+
+
+            // PRODUCT CATEGORY
+            const cardCategory = (
+                card.dataset.category || ""
+            ).trim().toLowerCase();
+
+
+            // NEW ITEM STATUS
+            const isNew = ["1", "true"].includes(
+                (card.dataset.isnew || "").trim().toLowerCase()
+            );
+
+
+            /* =====================================
+               SEARCH MATCH - STARTS WITH
+            ===================================== */
+
+            const matchesSearch = !filter ||
+                txtItemRef.startsWith(filter) ||
+                txtDescription.startsWith(filter) ||
+                upcValue.startsWith(filter);
+
+
+            /* =====================================
+               CATEGORY MATCH
+            ===================================== */
+
+            const matchesCategory =
+                !category || cardCategory === category;
+
+
+            /* =====================================
+               NEW ITEMS MATCH
+            ===================================== */
+
+            const matchesNew =
+                !newOnly || isNew;
+
+
+            /* =====================================
+               APPLY ALL FILTERS
+            ===================================== */
+
+            const showProduct =
+                matchesSearch &&
+                matchesCategory &&
+                matchesNew;
+
+
+            card.style.display = showProduct ? "block" : "none";
+
         });
-
-    });
-
-    /* FILTER */
-
-    function filterProducts(){
-
-    const category=document.getElementById("categoryDropdown").value.toLowerCase()
-    const newOnly=document.getElementById("newOnlyCheckbox").checked
-
-    const cards=document.querySelectorAll(".product-card")
-
-    cards.forEach(card=>{
-
-    const cardCategory=(card.dataset.category||"").toLowerCase()
-    const isNew=card.dataset.isnew==="1"
-
-    let show=true
-
-    if(category && cardCategory!==category)
-    show=false
-
-    if(newOnly && !isNew)
-    show=false
-
-    card.style.display=show?"block":"none"
-
-    })
 
     }
 

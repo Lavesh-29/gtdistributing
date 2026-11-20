@@ -391,24 +391,6 @@
                 gap: 10px;
             }
         }
-        .order-total-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 20px;
-    margin-bottom: 10px;
-    background: #f2f6fa;
-    border-radius: 8px;
-    font-size: 22px;
-    font-weight: bold;
-    color: #222;
-}
-
-#orderTotal {
-    color: #008000;
-    font-size: 26px;
-}
     </style>
 
 </head>
@@ -495,22 +477,15 @@
         <label style="margin-left: 20px;">
             <input type="checkbox" id="newOnlyCheckbox" onchange="filterByCategory()"> New Items Only
         </label>
-        <div class="order-total-container" style="margin-left: auto; white-space: nowrap;">
-            <span>Order Total:</span>
-            <span id="orderTotal">$0.00</span>
-        </div>
 <!--        <button id="dealsButton" onclick="openDeals()" style="flex: none;">Deals</button>-->
     </div>
-
     <table id="productTable">
         <thead>
         <tr>
             <th>Image</th>
             <th>Item Ref No</th>
             <th>Description</th>
-            <th>Unit Price</th>
             <th>QTY</th>
-
         </tr>
         </thead>
 
@@ -538,8 +513,6 @@
 
             <td th:text="${product.item_Ref}"></td>
             <td th:text="${product.description}"></td>
-            <!-- Sell Unit Price -->
-            <td th:text="${product.sell_Unit_Price != null ? '$' + product.sell_Unit_Price : '$0.00'}"></td>
 
             <td>
                 <div class="quantity-container">
@@ -1011,7 +984,7 @@ function changeQuantity(button, delta) {
 
     // Save to localStorage here:
     updateLocalStorage(input.closest('tr').cells[1].textContent, newQty);
-calculateOrderTotal();
+
 }
 function updateLocalStorage(itemRef, quantity) {
                              let orderItems = JSON.parse(localStorage.getItem('orderItems')) || {};
@@ -1142,7 +1115,7 @@ function updateQuantity(itemRef, change) {
         removeItem(itemRef);
         return;
     }
-calculateOrderTotal();
+
     // ✅ Sync with main table and update preview
     qtyElement.innerText = newQty;
     matchedRow.querySelector(".quantity-input").value = newQty;
@@ -1211,7 +1184,7 @@ function handleManualQuantityChange(input) {
 
     const categoryMatch = selectedCategory === "" || category === selectedCategory;
     const newItemMatch = !newOnly || isNew;
-calculateOrderTotal();
+
     row.style.display = (categoryMatch && newItemMatch) ? "" : "none";
   });
 }
@@ -1222,77 +1195,81 @@ calculateOrderTotal();
                              searchTimeout = setTimeout(searchProducts, 300);
                          }
 
+
+
 function searchProducts() {
     const input = document.getElementById("searchInput");
     const filter = input.value.trim().toUpperCase();
     const table = document.getElementById("productTable");
     const rows = table.getElementsByTagName("tr");
-    let itemFound = false;
-    const isScan = filter.length >= 10 && !filter.includes(' ');
 
-    // Get all promotion elements by their class name
+    let itemFound = false;
+
+    // Only treat a 12- or 13-digit value as a barcode scan
+    const isScan = /^\d{12,13}$/.test(filter);
+
+    // Show promotions only when search is empty
     const promoElements = document.querySelectorAll(".order-rule");
 
-    // Loop through the list of promotion elements and hide/show them
     promoElements.forEach(promo => {
-        promo.style.display = (filter === "") ? "" : "none";
+        promo.style.display = filter === "" ? "" : "none";
     });
 
     for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
+
         const tdItemRef = row.getElementsByTagName("td")[1];
         const tdDescription = row.getElementsByTagName("td")[2];
+
         const upc = row.getAttribute("data-upc");
+
         const qtyInput = row.querySelector("td input");
 
-        if (filter === "") {
-            row.style.display = ""; // Show all rows when filter is empty
+        if (!tdItemRef || !tdDescription) {
             continue;
         }
 
-        if (tdItemRef && tdDescription) {
-            const txtItemRef = tdItemRef.textContent.trim().toUpperCase();
-            const txtDescription = tdDescription.textContent.trim().toUpperCase();
-            const upcValue = upc ? upc.trim().toUpperCase() : "";
+        const txtItemRef = tdItemRef.textContent.trim().toUpperCase();
+        const txtDescription = tdDescription.textContent.trim().toUpperCase();
+        const upcValue = upc ? upc.trim().toUpperCase() : "";
 
-            const searchTerms = filter.split(/\s+/);
-            const matchesSearch = searchTerms.every(term =>
-                txtItemRef.includes(term) ||
-                txtDescription.includes(term) ||
-                upcValue.includes(term)
-            );
+        // Progressive starts-with search
+        const matchesSearch =
+            filter === "" ||
+            txtItemRef.startsWith(filter) ||
+            txtDescription.startsWith(filter) ||
+            upcValue.startsWith(filter);
 
-            if (matchesSearch) {
-                itemFound = true;
-                row.style.display = "";
+        row.style.display = matchesSearch ? "" : "none";
 
-                if (isScan) {
-                    const quantity = parseInt(row.dataset.quantity) || 0;
-                    const qtyLimit = parseInt(row.dataset.qtyLimit) || 0;
+        if (matchesSearch) {
+            itemFound = true;
 
-                    if (quantity === 0) {
-                        alert(`Sorry, ${txtDescription} is temporarily out of stock.`);
+            // Process barcode scan
+            if (isScan) {
+                const quantity = parseInt(row.dataset.quantity) || 0;
+                const qtyLimit = parseInt(row.dataset.qtyLimit) || 0;
+
+                if (quantity <= 0) {
+                    alert(`Sorry, ${txtDescription} is temporarily out of stock.`);
+                    return;
+                }
+
+                if (qtyInput) {
+                    const currentQty = parseInt(qtyInput.value) || 0;
+                    const newQty = currentQty + 1;
+
+                    if (newQty > qtyLimit) {
+                        alert(`Only ${qtyLimit} allowed per order for ${txtDescription}.`);
                         return;
                     }
 
-                    if (qtyInput) {
-                        let currentQty = parseInt(qtyInput.value) || 0;
-                        let newQty = currentQty + 1;
-
-                        if (newQty > qtyLimit) {
-                            alert(`Only ${qtyLimit} allowed per order for ${txtDescription}.`);
-                            return;
-                        }
-
-                        qtyInput.value = newQty;
-                        updateLocalStorage(txtItemRef, newQty);
-                    }
-
-                    input.value = "";
-                    break; // Exit loop after processing scanned item
+                    qtyInput.value = newQty;
+                    updateLocalStorage(txtItemRef, newQty);
                 }
-            } else {
-                row.style.display = "none";
+
+                input.value = "";
+                break;
             }
         }
     }
@@ -1302,11 +1279,10 @@ function searchProducts() {
     }
 
     if (!isScan) {
-        console.log("Manual search performed. No item added.");
+        console.log("Manual search performed.");
     }
 
     input.focus();
-    console.log(isScan ? "Scanned item processed." : "Manual search performed.");
 }
 let codeReader;
 let scannerOpen = false;
@@ -1437,27 +1413,11 @@ if (cameraBtn) cameraBtn.addEventListener("click", toggleScanner);
 document.addEventListener("DOMContentLoaded", () => {
     if (cameraBtn && !isMobileDevice()) cameraBtn.style.display = "none";
 });
-function calculateOrderTotal() {
-    let total = 0;
 
-    document.querySelectorAll("#productTable tbody tr").forEach(row => {
-        let price = parseFloat(row.dataset.sellUnitPrice) || 0;
-
-        let quantityInput = row.querySelector(".quantity-input");
-        let quantity = parseFloat(quantityInput.value) || 0;
-
-        total += price * quantity;
-    });
-
-    document.getElementById("orderTotal").textContent =
-        "$" + total.toFixed(2);
-}
 window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('isAuthenticated');
 });
- document.addEventListener("DOMContentLoaded", function() {
-        calculateOrderTotal();
-    })
+
 </script>
 </body>
 </html>
